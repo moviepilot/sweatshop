@@ -24,6 +24,21 @@ if (isset($_POST['key']) && !empty($_POST['key'])) {
 			$repsonse['message']		 =	'Node category has been updated';
 			
 		break;
+	
+		case 'nodeprop':
+			
+			if ($_POST['type'] == 'value') {
+				
+				$repsonse['message']	 =	'Node property value has been updated';
+				
+			} else {
+				
+				$repsonse['message']	 =	'Node category has been updated';
+			}
+			
+			$repsonse['type']			 =	'message';
+			
+		break;
 		
 	}
 	

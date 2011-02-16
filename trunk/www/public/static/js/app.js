@@ -17,6 +17,8 @@ ExtAPI.App.extend
 		
 		var title						 =	new ExtAPI.App.title();
 		var category					 =	new ExtAPI.App.category();
+		var nodeprops					 =	new ExtAPI.App.nodeprops();
+		
 		
 	}
 	

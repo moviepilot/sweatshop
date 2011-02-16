@@ -98,7 +98,7 @@ div#wrapper div.column.last {
 	margin: 0;
 }
 
-div#wrapper div.column div {
+div#wrapper div.column > div {
 	background: #fff;
 	height: 281px;
 	margin-bottom: 22px;
@@ -141,4 +141,74 @@ div#wrapper div#title input {
 
 div#wrapper div#title input.saving {
 	background: url('/static/images/ajax-loader.gif') 98% 8px no-repeat;
+}
+
+/**
+ * ------------------------------------------------------------------------------------ Nodeprops
+ */
+
+div#wrapper div.column div#nodeprops {
+	padding: 0;
+	height: 309px;
+}
+
+div#wrapper div.column div#nodeprops > div {
+	overflow-y: auto;
+	overflow-x: hidden;
+	height: 288px;
+}
+
+div#wrapper div.column div#nodeprops > div > div {
+	float: none;
+	overflow: hidden;
+	border-bottom: 1px solid #ccc;
+}
+
+div#wrapper div.column div#nodeprops > div > div.header {
+	background: #eee;
+	font-weight: bold;
+}
+
+div#wrapper div.column div#nodeprops > div > div div {
+	float: left;
+	padding: 5px 11px;
+	border-right: 1px solid #ccc;
+	cursor: pointer;
+}
+
+div#wrapper div.column div#nodeprops > div > div div.key {
+	width: 36%;
+}
+
+div#wrapper div.column div#nodeprops > div > div div.value {
+	width: 30%;
+}
+
+div#wrapper div.column div#nodeprops > div > div div.del {
+	border: none;
+	text-align: center;
+	width: 8%;
+}
+
+div#wrapper div.column div#nodeprops > div > div.row div.del {
+	color: #ccc;
+}
+
+div#wrapper div.column div#nodeprops > div > div div input {
+	width: 95%;
+	padding: 0px;
+	font-size: 9px;
+}
+
+div#wrapper div.column div#nodeprops div#addnew {
+	background: #eee;
+	height: 21px;
+	overflow: hidden;
+	padding: 0 7px;
+	text-align: right;
+	cursor: pointer;
+}
+
+div#wrapper div.column div#nodeprops > div > div div input.saving {
+	background: url('/static/images/ajax-loader.gif') 98% -1px no-repeat;
 }

@@ -46,7 +46,35 @@
         
         <div class="column">
 
-            <div id="nodeProps"></div>
+            <div id="nodeprops">
+                <div>
+                    <div class="header">
+                        <div class="key" disabled="true">Key</div>
+                        <div class="value" disabled="true">Value</div>
+                        <div class="del" disabled="true">Del</div>
+                    </div>
+                    
+                    <div class="row" rowid="123">
+                        <div class="key" disabled="true">_id</div>
+                        <div class="value" disabled="true">12354984</div>
+                    </div>
+                    
+                    <div class="row" rowid="784">
+                        <div class="key">moviemaster_id</div>
+                        <div class="value">547</div>
+                        <div class="del">[x]</div>
+                    </div>
+                    
+                    <div class="row" rowid="389">
+                        <div class="key">facebook_id</div>
+                        <div class="value">1279879379</div>
+                        <div class="del">[x]</div>
+                    </div>
+                </div>
+                
+                <div id="addnew">Add [+]</div>
+                
+            </div>
             
             <div id="people">
                 

@@ -58,9 +58,10 @@ ExtAPI.App.title.extend
 			
 			this.input.focus();
 			
-			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	'title');
-			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	'title');
+			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	"title");
+			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	"title");
 			
+				
 		}
 		
 	},
@@ -137,9 +138,12 @@ ExtAPI.App.title.extend
 			
 			case 'display':
 				
+				SOAPI.Event.removeEventHandler(this.input,"blur",	"title");
+				SOAPI.Event.removeEventHandler(this.input,"keyup",	"title");
+				
 				this.el.removeChild(this.input);
 				this.input 			 	=	null;
-					
+				
 				this.title.show();
 				
 			break;

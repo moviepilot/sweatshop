@@ -18,7 +18,7 @@ ExtAPI.App.category.extend
 			
 			this.el						 =	$('category');
 						
-			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'title');
+			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'category');
 			
 		}		
 		
