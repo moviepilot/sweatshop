@@ -1,45 +1,45 @@
 /**
- * -------------------------------------------------------------------------------- Title object
+ * -------------------------------------------------------------------------------- Name object
  */
-ExtAPI.App.title			 			 = 	SOAPI.Class.extension();
+ExtAPI.App.name			 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.title.extend
+ExtAPI.App.name.extend
 ({
 	
 	el									 :	null,
 	
-	title								 :	null,
+	name								 :	null,
 	input								 :	null,
 	mode								 :	'display',
 	
 	construct							 :	function() {
 		
-		if ($('title')) {
+		if ($('name')) {
 			
-			var handlers				 =	ExtAPI.App.title.eventHandlers;
+			var handlers				 =	ExtAPI.App.name.eventHandlers;
 			
-			this.el						 =	$('title');
+			this.el						 =	$('name');
+			this.name					 = 	this.el.children[0];
+			this.name.onselectstart 	 = 	function() { return false; }
+			this.name.unselectable 	 	 = 	'on';
+			this.name.style.MozUserSelect  =	'none';
+			
+			if (window.node.name != '')		this.name.innerHTML = window.node.name;
 						
-			this.title					 = 	this.el.children[0];
-			this.title.onselectstart 	 = 	function() { return false; }
-			this.title.unselectable 	 = 	'on';
-			this.title.style.MozUserSelect  =	'none';
-			
-			SOAPI.Event.addEventHandler(this.el,"onmouseup",[this,handlers.el.onmouseup],'title');
+			SOAPI.Event.addEventHandler(this.name,"onmouseup",[this,handlers.el.onmouseup],'name');
 			
 		}		
 		
 	},
 	
-	createInput						 	 :	function() {
+	edit							 	 :	function() {
 		
 		if (this.mode == 'display') {
 			
 			this.mode					 =	'edit';
-			this.setInterface();
 			
-			var value					 =	this.title != undefined ? this.title.innerHTML : '';		
-			var handlers				 =	ExtAPI.App.title.eventHandlers;
+			var value					 =	this.name != undefined ? this.name.innerHTML : '';		
+			var handlers				 =	ExtAPI.App.name.eventHandlers;
 			
 			this.input					 =	SOAPI.createElement({
 				
@@ -50,7 +50,7 @@ ExtAPI.App.title.extend
 					
 					value 				 : 	value,
 					type 				 : 	'text',
-					id					 :	'titleInput'
+					id					 :	'nameInput'
 					
 					}
 				
@@ -58,22 +58,23 @@ ExtAPI.App.title.extend
 			
 			this.input.focus();
 			
-			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	"title");
-			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	"title");
+			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	"name");
+			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	"name");
 			
-				
+			this.setInterface();
+			
 		}
 		
 	},
 	
 	saveInput							 :	function() {
 		
-		if (this.input.value != '' && (this.title.innerHTML != this.input.value)) {
+		if (this.input.value != '' && (this.name.innerHTML != this.input.value)) {
 			
 			var data					 =	new Object();
 			data._id					 =	window.node._id;
 			data.key				 	 = 	'name';
-			data.value					 =	this.title.innerHTML = this.input.value;
+			data.value					 =	this.input.value;
 					
 			var obj						 =	this;
 			SOAPI.Ajax.request({
@@ -132,19 +133,25 @@ ExtAPI.App.title.extend
 			
 			case 'edit':
 				
-				this.title.hide();
+				this.input.value		 =	this.name.innerHTML;
+				this.input.disabled		 =	false;
+				
+				this.input.removeClassName('saving');
+				this.name.hide();
 				
 			break;
 			
 			case 'display':
 				
-				SOAPI.Event.removeEventHandler(this.input,"blur",	"title");
-				SOAPI.Event.removeEventHandler(this.input,"keyup",	"title");
+				this.name.innerHTML		 =	this.input.value;
+				
+				SOAPI.Event.removeEventHandler(this.input,"blur",	"name");
+				SOAPI.Event.removeEventHandler(this.input,"keyup",	"name");
 				
 				this.el.removeChild(this.input);
 				this.input 			 	=	null;
 				
-				this.title.show();
+				this.name.show();
 				
 			break;
 			
@@ -154,13 +161,13 @@ ExtAPI.App.title.extend
 	
 });
 
-ExtAPI.App.title.eventHandlers 		 	 = 	{
+ExtAPI.App.name.eventHandlers 		 	 = 	{
 	
 	el								 	 :	{
 		
 		onmouseup						 :	function(event) {
 			
-			this.createInput();
+			this.edit();
 			
 			return true;
 						

@@ -1,9 +1,9 @@
 /**
- * -------------------------------------------------------------------------------- Category object
+ * -------------------------------------------------------------------------------- Type object
  */
-ExtAPI.App.category			 			 = 	SOAPI.Class.extension();
+ExtAPI.App.type			 				 = 	SOAPI.Class.extension();
 
-ExtAPI.App.category.extend
+ExtAPI.App.type.extend
 ({
 	
 	el									 :	null,
@@ -12,13 +12,23 @@ ExtAPI.App.category.extend
 	
 	construct							 :	function() {
 		
-		if ($('category')) {
+		if ($('type')) {
 			
-			var handlers				 =	ExtAPI.App.category.eventHandlers;
+			var handlers				 =	ExtAPI.App.type.eventHandlers;
 			
-			this.el						 =	$('category');
+			this.el						 =	$('type');
+			
+			if (window.node.type != '') {
+				
+				for (var i = 0; i < this.el.options.length; i++) {
+					
+					if (this.el.options[i].value == window.node.type) this.el.options[i].selected = true;
+					
+				}
+				
+			}
 						
-			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'category');
+			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'type');
 			
 		}		
 		
@@ -28,7 +38,7 @@ ExtAPI.App.category.extend
 		
 		var data						 =	new Object();
 		data._id						 =	window.node._id;
-		data.key				 		 = 	'category';
+		data.key				 		 = 	'type';
 		data.value						 =	this.el.value;
 				
 		var obj							 =	this;
@@ -82,7 +92,7 @@ ExtAPI.App.category.extend
 	
 });
 
-ExtAPI.App.category.eventHandlers 		 = 	{
+ExtAPI.App.type.eventHandlers 		 = 	{
 	
 	el 									 :	{
 		

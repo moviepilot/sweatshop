@@ -18,32 +18,24 @@ if (isset($_POST['key']) && !empty($_POST['key'])) {
 			
 		break;
 		
-		case 'category':
+		case 'type':
 			
 			$repsonse['type']			 =	'message';
-			$repsonse['message']		 =	'Node category has been updated';
+			$repsonse['message']		 =	'Node type has been updated';
 			
 		break;
 	
-		case 'nodeprop':
-			
-			if ($_POST['type'] == 'value') {
-				
-				$repsonse['message']	 =	'Node property value has been updated';
-				
-			} else {
-				
-				$repsonse['message']	 =	'Node category has been updated';
-			}
+		case 'facebook_ids':
+		case 'moviemaster_id':
+		case 'permalink':
 			
 			$repsonse['type']			 =	'message';
+			$repsonse['message']		 =	"Property has been updated";
 			
 		break;
 		
 	}
 	
 }
-
-
 
 echo json_encode($repsonse);
