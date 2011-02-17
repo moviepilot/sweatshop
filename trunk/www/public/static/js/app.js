@@ -14,6 +14,8 @@ ExtAPI.App.extend
 		
 		ExtAPI.Feedback					 = 	new ExtAPI.App.feedback();
 		
+		ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Connecting to data source');
+		
 		// This is just here for demo purposes, as we don't know how were are getting to this point
 		
 		var obj							 =	this;
@@ -27,15 +29,25 @@ ExtAPI.App.extend
 				},
 			
 			onSuccess : function(data) {
+			
+				if (data.type == 'error') {
+					
+					ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,data.message);
 				
-				window.node				 =	data;
-				obj.buildApp();
+				} else {
 				
-			}});
+					window.node			 =	data;
+					obj.buildApp();
+				
+				}
+				
+				}});
 		
 	},
 	
 	buildApp							 :	function() {
+		
+		ExtAPI.Feedback.clearMessage();
 		
 		var name						 =	new ExtAPI.App.name();
 		var category					 =	new ExtAPI.App.type();

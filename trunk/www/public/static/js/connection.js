@@ -57,11 +57,14 @@ ExtAPI.App.connection.extend
 			content						 :	this.connection.weight,
 			attributes 					 : 	{
 				
-				'class'					 : 	'weight'
+				'class'					 : 	'weight',
+				'widget'				 :	'slider'
 				
 				}
 			
 			});	
+		
+		SOAPI.buildWidgets(row);		
 		
 		SOAPI.Event.addEventHandler(name,	"onmouseup",		[this,handlers.name.onmouseup],	"name");
 		
