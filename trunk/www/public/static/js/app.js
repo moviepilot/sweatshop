@@ -14,7 +14,7 @@ ExtAPI.App.extend
 		
 		ExtAPI.Feedback					 = 	new ExtAPI.App.feedback();
 		
-		ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Connecting to data source');
+		ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Requesting node data');
 		
 		// This is just here for demo purposes, as we don't know how were are getting to this point
 		
@@ -36,6 +36,8 @@ ExtAPI.App.extend
 				
 				} else {
 				
+					ExtAPI.Feedback.clearMessage();
+					
 					window.node			 =	data;
 					obj.buildApp();
 				
@@ -47,10 +49,10 @@ ExtAPI.App.extend
 	
 	buildApp							 :	function() {
 		
-		ExtAPI.Feedback.clearMessage();
+		ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Requesting edge data');
 		
-		var name						 =	new ExtAPI.App.name();
-		var category					 =	new ExtAPI.App.type();
+		var nodename					 =	new ExtAPI.App.nodename();
+		var category					 =	new ExtAPI.App.nodetype();
 		var nodeprops					 =	new ExtAPI.App.nodeprops();
 		
 		// Leaving the image upload to later, the following line just sets the bg of the
@@ -73,8 +75,18 @@ ExtAPI.App.extend
 			
 			onSuccess : function(data) {
 				
-				window.node.edges		 =	data;
-				obj.updateEdges();
+				if (data.type == 'error') {
+					
+					ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,data.message);
+				
+				} else {
+				
+					ExtAPI.Feedback.clearMessage();
+					
+					window.node.edges		 =	data;
+					obj.updateEdges();
+				
+				}
 				
 			}});
 		

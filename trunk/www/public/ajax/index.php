@@ -33,6 +33,13 @@ if (isset($_POST['key']) && !empty($_POST['key'])) {
 			$repsonse['message']		 =	"Property has been updated";
 			
 		break;
+	
+		case 'edge':
+			
+			$repsonse['type']			 =	'message';
+			$repsonse['message']		 =	"Edge id {$_POST['_id']} weight has been updated to {$_POST['weight']}";
+			
+		break;
 		
 	}
 	

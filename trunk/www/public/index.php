@@ -13,7 +13,7 @@
     
     <script>
         
-        window.node_id                   =  <?=$_GET['_id']; ?>;
+        window.node_id                   =  <?=$_GET['_id'] ? $_GET['_id'] : 12233; ?>;
     
     </script>
     
@@ -86,6 +86,9 @@
                 
                 <div>
                     <input type="text" id="searchConnections" value="search..." />
+                
+                    <div id="holder"></div>
+                
                 </div>
                 
             </div>

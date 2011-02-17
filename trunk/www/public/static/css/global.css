@@ -238,6 +238,37 @@ div#wrapper div.column div.connection div.row div.name {
 	text-decoration: underline;
 }
 
+div#wrapper div.column div.connection > div > div.row.saving {
+	background: url('/static/images/ajax-loader.gif') 170px 7px no-repeat;
+}
+
+div#wrapper div.column div#connections input#searchConnections.searching {
+	background: url('/static/images/ajax-loader.gif') 98% 3px no-repeat;
+}
+
+div#wrapper div.column div#connections div#holder {
+	padding-top: 7px;
+}
+
+div#wrapper div.column div#connections div#holder div {
+	float: left;
+}
+
+div#wrapper div.column div#connections div#holder div.row {
+	clear: left;
+	width: 100%;
+	padding: 5px 0;
+}
+
+div#wrapper div.column div#connections div#holder div.row div.name {
+	width: 91%;	
+}
+
+div#wrapper div.column div#connections div#holder div.row div.add {
+	width: 20px;
+	color: blue;
+	cursor: pointer;
+}
 
 /**
  * ------------------------------------------------------------------------------------ Slider widget
@@ -250,7 +281,6 @@ div#wrapper div.column div.connection div > div[widget=slider] {
 
 div#wrapper div.column div.connection div > div[widget=slider] div {
 	float: none;
-	/*position: absolute;*/
 }
 
 div#wrapper div.column div.connection div > div[widget=slider] div[component=track] {
@@ -277,4 +307,7 @@ div#wrapper div.column div.connection div > div[widget=slider] div[component=upl
 div#wrapper div.column div.connection div > div[widget=slider] div[component=downright]
 {
 	display: none;
+	visibility: hidden;
+	opacity: 0;
 }
+

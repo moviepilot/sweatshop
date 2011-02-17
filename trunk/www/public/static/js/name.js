@@ -1,9 +1,9 @@
 /**
- * -------------------------------------------------------------------------------- Name object
+ * -------------------------------------------------------------------------------- Nodename object
  */
-ExtAPI.App.name			 			 = 	SOAPI.Class.extension();
+ExtAPI.App.nodename			 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.name.extend
+ExtAPI.App.nodename.extend
 ({
 	
 	el									 :	null,
@@ -16,7 +16,7 @@ ExtAPI.App.name.extend
 		
 		if ($('name')) {
 			
-			var handlers				 =	ExtAPI.App.name.eventHandlers;
+			var handlers				 =	ExtAPI.App.nodename.eventHandlers;
 			
 			this.el						 =	$('name');
 			this.name					 = 	this.el.children[0];
@@ -39,7 +39,7 @@ ExtAPI.App.name.extend
 			this.mode					 =	'edit';
 			
 			var value					 =	this.name != undefined ? this.name.innerHTML : '';		
-			var handlers				 =	ExtAPI.App.name.eventHandlers;
+			var handlers				 =	ExtAPI.App.nodename.eventHandlers;
 			
 			this.input					 =	SOAPI.createElement({
 				
@@ -161,7 +161,7 @@ ExtAPI.App.name.extend
 	
 });
 
-ExtAPI.App.name.eventHandlers 		 	 = 	{
+ExtAPI.App.nodename.eventHandlers 	 	 = 	{
 	
 	el								 	 :	{
 		

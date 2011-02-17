@@ -31,6 +31,8 @@
 	wtype								 :	"slider",
 	ctypes								 :	{ scrollbarV: SOAPI.Scrollbar, scrollbarH: SOAPI.Scrollbar },
 	
+	value								 :	0,
+	
 	parameters							 :	SOAPI.merge(SOAPI.Panel.prototype.parameters, {
 		tabindex						 :	0,
 		action							 :	""
@@ -102,6 +104,13 @@
 			parameters					 :	{ orientation: "horizontal" }
 		});
 		
+		SOAPI.Event.addEventHandler(scrollbarH,"scrollstart",	handlers.scrollbar.scrollstart,	"Slider");
+		SOAPI.Event.addEventHandler(scrollbarH,"scrollend",		handlers.scrollbar.scrollend,	"Slider");
+		
+		//~ Remove listeners on the track
+		
+		SOAPI.Event.removeEventHandler(scrollbarH.components.track,"mouseout","Scrollbar");
+		
 		//.											}		
 		
 		return result;
@@ -150,7 +159,7 @@
 		
 		var min							 =	this.getAttribute('min');
 		var max							 =	this.getAttribute('max');
-		var value						 =	this.getAttribute('value');
+		var value						 =	this.value = this.getAttribute('value');
 		var width						 =	this.components.scrollbarH.components.handle.get('actualwidth');
 		
 		this.components.scrollbarH.recalculateScrollProperties(min, max, value, width);		
@@ -169,7 +178,28 @@
 	
 	SOAPI.Slider_Handlers				 =	{
 		
-		
+		scrollbar						 :	{
+			
+			scrollstart					 :	function(event) {
+				
+				this.parentWidget.value  =	this.position;
+				
+				SOAPI.Event.triggerEvent("scrollstart", this.parentWidget);
+				
+				return true;
+				
+			},
+			
+			scrollend					 :	function(event) {
+				
+				this.parentWidget.value  =	this.position;
+				
+				SOAPI.Event.triggerEvent("scrollend", this.parentWidget);
+				
+				return true;
+				
+			}			
+		}
 		
 	};
 	

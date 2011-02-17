@@ -1,9 +1,9 @@
 /**
- * -------------------------------------------------------------------------------- Type object
+ * -------------------------------------------------------------------------------- Nodetype object
  */
-ExtAPI.App.type			 				 = 	SOAPI.Class.extension();
+ExtAPI.App.nodetype			 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.type.extend
+ExtAPI.App.nodetype.extend
 ({
 	
 	el									 :	null,
@@ -14,7 +14,7 @@ ExtAPI.App.type.extend
 		
 		if ($('type')) {
 			
-			var handlers				 =	ExtAPI.App.type.eventHandlers;
+			var handlers				 =	ExtAPI.App.nodetype.eventHandlers;
 			
 			this.el						 =	$('type');
 			
@@ -92,7 +92,7 @@ ExtAPI.App.type.extend
 	
 });
 
-ExtAPI.App.type.eventHandlers 		 = 	{
+ExtAPI.App.nodetype.eventHandlers 		 = 	{
 	
 	el 									 :	{
 		
