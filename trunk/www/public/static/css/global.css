@@ -156,11 +156,6 @@ div#wrapper div#name input.saving {
  * ------------------------------------------------------------------------------------ Nodeprops
  */
 
-/*div#wrapper div.column div#nodeprops {*/
-/*	padding: 0;*/
-/*	height: 309px;*/
-/*}*/
-/**/
 div#wrapper div.column div#nodeprops > div {
 	padding: 0;
 	height: 279px;
@@ -237,8 +232,49 @@ div#wrapper div.column div.connection div > div {
 }
 
 div#wrapper div.column div.connection div.row div.name {
-	width: 226px;
+	width: 189px;
 	cursor: pointer;
 	color: blue;
 	text-decoration: underline;
+}
+
+
+/**
+ * ------------------------------------------------------------------------------------ Slider widget
+ */
+
+div#wrapper div.column div.connection div > div[widget=slider] {
+	width: 70px;
+	position: relative;
+}
+
+div#wrapper div.column div.connection div > div[widget=slider] div {
+	float: none;
+	/*position: absolute;*/
+}
+
+div#wrapper div.column div.connection div > div[widget=slider] div[component=track] {
+	width: 70px;
+	background: #5A5A5B;
+	height: 2px;
+	position: absolute;
+	top: 10px;
+	left: 0px;
+}
+
+div#wrapper div.column div.connection div > div[widget=slider] div[component=handle] {
+	height: 11px;
+	background: #ccc;
+	position: absolute;
+	cursor: pointer;
+	top: 6px;
+	left: 0px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+div#wrapper div.column div.connection div > div[widget=slider] div[component=upleft],
+div#wrapper div.column div.connection div > div[widget=slider] div[component=downright]
+{
+	display: none;
 }

@@ -42,7 +42,7 @@
 			"scrollbar"					 =>	array("soapi_widgets" => "button"),
 			"scrollbox"					 =>	array("soapi_widgets" => "scrollbar"),
 			"selectbox"					 =>	array("soapi_widgets" => "menu"),
-			"slider"					 =>	array("soapi_widgets" => "panel"),
+			"slider"					 =>	array("soapi_widgets" => "panel scrollbar"),
 			"splitpanel"				 =>	array("soapi_widgets" => "button"),
 			"tabstrip"					 =>	array("soapi_widgets" => "scrollbox"),
 			"textarea"					 =>	array("soapi" => "validator validator_definitions", "soapi_widgets" => "textbox scrollbox"),

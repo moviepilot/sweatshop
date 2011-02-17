@@ -27,11 +27,7 @@ ExtAPI.App.connection.extend
 		var row							 =	SOAPI.createElement({
 					
 			parent 				 	 	 : 	this.parentEl,
-			attributes 			 	 	 : 	{
-				
-				'class'			 	 	 : 	'row'
-								
-				}
+			attributes 			 	 	 : 	{ 'class' : 'row' }
 			
 			});
 		
@@ -41,11 +37,7 @@ ExtAPI.App.connection.extend
 					
 			parent 						 : 	row,
 			content						 :	this.connection.to.name,
-			attributes 					 : 	{
-				
-				'class'					 : 	'name'
-				
-				}
+			attributes 					 : 	{ 'class' : 'name' }
 			
 			});
 		
@@ -54,18 +46,18 @@ ExtAPI.App.connection.extend
 		var weight						 = 	SOAPI.createElement({
 					
 			parent 						 : 	row,
-			content						 :	this.connection.weight,
 			attributes 					 : 	{
 				
-				'class'					 : 	'weight',
-				'widget'				 :	'slider'
+				'widget' 				 : 	'slider',
+				'value' 				 : 	(this.connection.weight * 100),
+				'min'					 :	0,
+				'max'					 :	100
 				
 				}
 			
 			});	
 		
 		SOAPI.buildWidgets(row);		
-		
 		SOAPI.Event.addEventHandler(name,	"onmouseup",		[this,handlers.name.onmouseup],	"name");
 		
 	}
@@ -78,7 +70,7 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 		
 		onmouseup						 :	function(event) {
 			
-			window.location				 =	'/?_id=' + this.connection._id;
+			window.location				 =	'/?_id=' + this.connection.to._id;
 						
 			return true;
 			

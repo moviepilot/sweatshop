@@ -29,6 +29,7 @@
 	//*														
 	
 	wtype								 :	"slider",
+	ctypes								 :	{ scrollbarV: SOAPI.Scrollbar, scrollbarH: SOAPI.Scrollbar },
 	
 	parameters							 :	SOAPI.merge(SOAPI.Panel.prototype.parameters, {
 		tabindex						 :	0,
@@ -57,7 +58,7 @@
 		///			object setup( object parameters )										
 		///																					
 		///				object parameters {													
-		///					...inherited from Panel...										
+		///					...inherited from Panel...										                                                                                                                                                                                                                                                                                                                                            
 		///					[integer tabindex], [string action]								
 		///				}																	
 		///	)																				
@@ -94,17 +95,67 @@
 		var c							 =	w.components;
 		var handlers					 =	SOAPI.Slider_Handlers;
 		
-		
+		var scrollbarH					 =	c.scrollbarH	 =	this.createComponent({
+			element						 :	p.element,
+			parent						 :	w,
+			cType						 :	"scrollbarH",
+			parameters					 :	{ orientation: "horizontal" }
+		});
 		
 		//.											}		
 		
 		return result;
 		
-	}
+	},
 	
 	//-														
 	//-												}		
 	//-														
+	
+	//-														
+	//-	configure										{	
+	//-														
+	
+	configure							 :	function
+	
+	/*(	//~	Documentation				
+		///																					
+		///		Perform additional configuration.											
+		///																					
+		///	(	Syntax:																		
+		///			void configure( void )													
+		///	)																				
+		///	(	Scope:																		
+		///			Public																	
+		///	)																				
+		///	(	Description:																
+		///			Performs additional configuration.										
+		///	)																				
+		///	(	Parameters:																	
+		///			void																	
+		///	)																				
+		///	(	Result:																		
+		///			void																	
+		///	)																				
+		///																					
+	)*/
+
+	(	//~	Parameters					
+		
+		//	None
+		
+	)
+	
+	{	//~	Code						
+		
+		var min							 =	this.getAttribute('min');
+		var max							 =	this.getAttribute('max');
+		var value						 =	this.getAttribute('value');
+		var width						 =	this.components.scrollbarH.components.handle.get('actualwidth');
+		
+		this.components.scrollbarH.recalculateScrollProperties(min, max, value, width);		
+		
+	}
 	
 	//*														
 	//*												}		
