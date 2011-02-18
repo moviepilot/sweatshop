@@ -176,7 +176,6 @@ div#wrapper div.column div#nodeprops > div > div div {
 	float: left;
 	padding: 5px 11px;
 	border-right: 1px solid #ccc;
-	cursor: pointer;
 	overflow: hidden;
 	white-space: nowrap;
 }
@@ -187,12 +186,14 @@ div#wrapper div.column div#nodeprops > div > div div.key {
 
 div#wrapper div.column div#nodeprops > div > div div.value {
 	width: 30%;
+	cursor: pointer;
 }
 
 div#wrapper div.column div#nodeprops > div > div div.del {
 	border: none;
 	text-align: center;
 	width: 8%;
+	cursor: pointer;
 }
 
 div#wrapper div.column div#nodeprops > div > div.row div.del {
@@ -208,10 +209,34 @@ div#wrapper div.column div#nodeprops > div > div div input {
 div#wrapper div.column div#nodeprops div#addnew {
 	background: #eee;
 	height: 21px;
-	overflow: hidden;
+	overflow: visible;
 	padding: 0 7px;
 	text-align: right;
 	cursor: pointer;
+	position: relative;
+}
+
+div#wrapper div.column div#nodeprops div#addnew div#addNewTypes {
+	background: #EEEEEE;
+    border: 1px solid #CCCCCC;
+    left: 100%;
+    padding: 5px;
+    position: absolute;
+    text-align: left;
+    top: -10px;
+    z-index: 999;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	display: none;
+}
+
+div#wrapper div.column div#nodeprops div#addnew div#addNewTypes div {
+	border: none;
+}
+
+div#wrapper div.column div#nodeprops div#addnew:hover > div#addNewTypes {
+	display: block;
 }
 
 div#wrapper div.column div#nodeprops > div > div div input.saving {
@@ -225,6 +250,7 @@ div#wrapper div.column div#nodeprops > div > div div input.saving {
 div#wrapper div.column div.connection > div > div.row {
 	padding: 5px 0;
 	clear: left;
+	width: 100%;
 }
 
 div#wrapper div.column div.connection div > div {
@@ -232,7 +258,7 @@ div#wrapper div.column div.connection div > div {
 }
 
 div#wrapper div.column div.connection div.row div.name {
-	width: 189px;
+	max-width: 170px;
 	cursor: pointer;
 	color: blue;
 	text-decoration: underline;
@@ -277,6 +303,7 @@ div#wrapper div.column div#connections div#holder div.row div.add {
 div#wrapper div.column div.connection div > div[widget=slider] {
 	width: 70px;
 	position: relative;
+	float: right;
 }
 
 div#wrapper div.column div.connection div > div[widget=slider] div {
@@ -311,3 +338,24 @@ div#wrapper div.column div.connection div > div[widget=slider] div[component=dow
 	opacity: 0;
 }
 
+/**
+ * ------------------------------------------------------------------------------------ Breadcrumb
+ */
+
+div#wrapper div#breadcrumb {
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+
+div#wrapper div#breadcrumb > div {
+	float: left;
+	text-decoration: underline;
+	color: blue;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+div#wrapper div#breadcrumb > div.seperator {
+	text-decoration: none;
+	color: #ccc;
+}

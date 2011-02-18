@@ -12,9 +12,11 @@ ExtAPI.App.nodeprops.extend
 	holder								 :	null,
 	input								 :	null,
 	curreEl								 :	null,
-	initVal								 :	0,
+	initVal								 :	null,
 	
 	mode								 :	'display',
+	
+	proptypes							 :	null,
 	
 	construct							 :	function() {
 		
@@ -25,6 +27,8 @@ ExtAPI.App.nodeprops.extend
 			this.el						 =	$('nodeprops');
 			this.holder					 =	this.el.children[0];
 			this.rows					 =	new Array();
+			this.proptypes				 =	['facebook_id','moviemaster_id','permalink'];
+			this.initVal				 =	0;
 			
 			//~ Just for demo purposes - should really be some sort of key value type thing so that it's felexible
 		
@@ -44,14 +48,40 @@ ExtAPI.App.nodeprops.extend
 			if (window.node.permalink)		this.addRow('permalink',		window.node.permalink,		false,true);
 			
 			SOAPI.Event.addEventHandler(this.holder,	"onmouseup",		[this,handlers.holder.onmouseup],'nodeprops');
-								
+			
+			this.addTypes();
+							
 		}		
 		
 	},
 	
-	
+	addTypes							 :	function() {
+		
+		var ln							 =	this.proptypes.length;
+		var typeList					 =	$('addNewTypes');
+		var handlers					 =	ExtAPI.App.nodeprops.eventHandlers;
+		
+		while (ln--) {
+			
+			var listItem				 =	SOAPI.createElement({ parent : typeList,content	: this.proptypes[ln] });
+			
+			SOAPI.Event.addEventHandler(listItem,		"onmouseup",		[this,handlers.addNew.onmouseup],'nodeprops');
+			
+		}
+		
+	},
 	
 	addRow						 		 :	function(key,value,protect,del) {
+	
+		//~ Remove types that we've already go on load
+		
+		var ln							 =	this.proptypes.length;
+		
+		while (ln--) {
+			
+			if (this.proptypes[ln] == key && key != 'facebook_id') 	this.proptypes.splice(ln,1);
+			
+		}
 		
 		//~ Row
 		
@@ -67,7 +97,7 @@ ExtAPI.App.nodeprops.extend
 			});
 		
 		// ~ Key
-
+		
 		SOAPI.createElement({
 					
 			parent 						 : 	row,
@@ -116,7 +146,9 @@ ExtAPI.App.nodeprops.extend
 		}
 		
 		this.rows.push(row);
-				
+		
+		return row;
+		
 	},
 	
 	edit								 :	function(element) {
@@ -158,6 +190,22 @@ ExtAPI.App.nodeprops.extend
 	},
 	
 	removeProperty						 :	function(element) {
+		
+		var data						 =	new Object();
+		data._id						 =	window.node._id;
+		data.key				 		 = 	'nodepropremove';
+		data.value						 =	element.parentNode.children[0].innerHTML;
+		
+		var obj							 =	this;
+		SOAPI.Ajax.request({
+				
+			url							 :	'/ajax/',
+			dataType		 			 :	'post',
+			showProgress		 		 :	false,
+			data			 			 :	data,
+			onSuccess					 :	function(data){ obj.onResponse(data); }
+					
+			});
 		
 		this.holder.removeChild(element.parentNode);
 		
@@ -212,7 +260,7 @@ ExtAPI.App.nodeprops.extend
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
 			
 			this.mode					 =	'display';
-			this.initVal				 = 	this.input.value;
+			this.initVal				 = 	this.input == null ? 0 : this.input.value;
 			
 		} else	{
 				
@@ -271,17 +319,42 @@ ExtAPI.App.nodeprops.extend
 			
 			case 'display':
 				
-				SOAPI.Event.removeEventHandler(this.input,"blur",	"nodeprops");
-				SOAPI.Event.removeEventHandler(this.input,"keyup",	"nodeprops");
+				if (this.input != null) {
 				
-				this.curreEl.removeChild(this.input);
-								
-				this.input				 = 	null;
-				this.curreEl.innerHTML 	 =	this.initVal;
-
+					SOAPI.Event.removeEventHandler(this.input,"blur",	"nodeprops");
+					SOAPI.Event.removeEventHandler(this.input,"keyup",	"nodeprops");
+					
+					this.curreEl.removeChild(this.input);
+									
+					this.input				 = 	null;
+					this.curreEl.innerHTML 	 =	this.initVal;
+				
+				}
+				
 			break;
 			
 		}
+		
+	},
+	
+	destroy								 :	function() {
+		
+		SOAPI.Event.removeEventHandler(this.holder, "onmouseup",'nodeprops');
+		
+		var ln							 =	$('addNewTypes').children.length;
+		
+		while (ln--) 						SOAPI.Event.removeEventHandler($('addNewTypes').children[ln],"onmouseup",'nodeprops');
+		
+		$('addNewTypes').innerHTML		 =	'';
+		
+		ln								 =	this.rows.length;
+		
+		while (ln--)						SOAPI.destroyElement(this.rows[ln]);
+		
+		this.holder						 =	null;
+		this.input						 =	null;
+		this.curreEl					 =	null;
+		this.initVal					 =	null;
 		
 	}
 	
@@ -325,7 +398,21 @@ ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 			
 		}
 		
-	}	
+	},
+	
+	addNew								 :	{
+		
+		onmouseup						 :	function(event) {
+			
+			var row						 =	this.addRow(event.element.innerHTML,'enter value...',false,true);
+			
+			if (event.element.innerHTML != 'facebook_id')	event.element.parentNode.removeChild(event.element);
+			
+			return true;		
+			
+		}		
+		
+	}
 	
 }
 

@@ -28,7 +28,7 @@ ExtAPI.App.nodetype.extend
 				
 			}
 						
-			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'type');
+			SOAPI.Event.addEventHandler(this.el,"change",[this,handlers.el.onmouseup],'nodetype');
 			
 		}		
 		
@@ -87,6 +87,14 @@ ExtAPI.App.nodetype.extend
 			break;
 			
 		}
+		
+	},
+	
+	destroy								 :	function() {
+		
+		SOAPI.Event.removeEventHandler(this.el,"change",'nodetype');
+		
+		this.el							 =	null;	
 		
 	}
 	

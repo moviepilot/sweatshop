@@ -10,15 +10,40 @@ ExtAPI.App.connection.extend
 	parentEl							 :	null,
 	
 	row									 :	null,
+	name								 :	null,
+	weight								 :	null,
 	
 	updateTimer							 :	null,
 	
-	construct							 :	function(connection,parentEl) {
+	construct							 :	function(connection,parentEl,newCon) {
 		
-		this.connection					 = 	connection;
-		this.parentEl					 = 	parentEl;
+		this.parentEl				 	 = 	parentEl;
+		
+		if (newCon) 						this.connection	= this.genNewConnection(connection);
+		else
+											this.connection	= connection;
 		
 		this.buildConnection();
+		
+	},
+	
+	genNewConnection					 :	function(connection) {
+		
+		var newConnection				 =	{
+		
+			_id				 			 :	null,
+			weight			 			 :	0,
+			to							 :	{
+				
+				_id						 :	connection._id,
+				name			 		 :	connection.name,
+				type					 :	connection.type
+				
+			}
+		
+		}
+		
+		return newConnection;
 		
 	},
 	
@@ -37,10 +62,10 @@ ExtAPI.App.connection.extend
 		this.row.onselectstart 			 = 	function() { return false; }
 		this.row.unselectable 		 	 = 	'on';
 		this.row.style.MozUserSelect	 =	'none';
-	
+		
 		// ~ Name
 		
-		var name						 = 	SOAPI.createElement({
+		this.name						 = 	SOAPI.createElement({
 					
 			parent 						 : 	this.row,
 			content						 :	this.connection.to.name,
@@ -50,7 +75,7 @@ ExtAPI.App.connection.extend
 		
 		//~ Weight
 		
-		var weight						 = 	SOAPI.createElement({
+		this.weight						 = 	SOAPI.createElement({
 					
 			parent 						 : 	this.row,
 			attributes 					 : 	{
@@ -68,8 +93,8 @@ ExtAPI.App.connection.extend
 		
 		var handlers					 =	ExtAPI.App.connection.eventHandlers;
 		
-		SOAPI.Event.addEventHandler(name,	"onmouseup",	[this,handlers.name.onmouseup],		"connection");
-		SOAPI.Event.addEventHandler(weight,	"scrollend",	[this,handlers.slider.scrollend],	"connection");
+		SOAPI.Event.addEventHandler(this.name,		"onmouseup",	[this,handlers.name.onmouseup],		"connection");
+		SOAPI.Event.addEventHandler(this.weight,	"scrollend",	[this,handlers.slider.scrollend],	"connection");
 		
 	},
 	
@@ -81,6 +106,7 @@ ExtAPI.App.connection.extend
 			
 			var data					 =	new Object();
 			data._id					 =	this.connection._id;
+			data.nodeid					 =	this.connection.to._id;
 			data.key				 	 = 	'edge';
 			data.weight					 =	value;
 				
@@ -131,6 +157,24 @@ ExtAPI.App.connection.extend
 			
 		}
 		
+	},
+	
+	destroy								 :	function() {
+		
+		SOAPI.Event.removeEventHandler(this.name,	"onmouseup", "connection");
+		SOAPI.Event.removeEventHandler(this.weight,	"scrollend", "connection");
+		
+		// We should put in something to destroy the widget...
+		
+		SOAPI.destroyElement(this.name);
+		SOAPI.destroyElement(this.weight);
+		SOAPI.destroyElement(this.row);
+		
+		this.connection					 =	null;
+		this.parentEl					 =	null;
+		this.row						 = 	null;
+		this.updateTimer				 =	null;
+		
 	}
 	
 });
@@ -141,7 +185,7 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 		
 		onmouseup						 :	function(event) {
 			
-			window.location				 =	'/?_id=' + this.connection.to._id;
+			ExtAPI.Node.getNode(this.connection.to._id);
 						
 			return true;
 			

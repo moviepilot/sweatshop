@@ -13,13 +13,15 @@
     
     <script>
         
-        window.node_id                   =  <?=$_GET['_id'] ? $_GET['_id'] : 12233; ?>;
+        window.intiNodeId                =  12233;
     
     </script>
     
 </head>
 <body>
     <div id="wrapper">
+        
+        <div id="breadcrumb"></div>
         
         <div id="name">
             <h1></h1>
@@ -61,10 +63,16 @@
                         <div class="key" disabled="true">Key</div>
                         <div class="value" disabled="true">Value</div>
                         <div class="del" disabled="true">Del</div>
-                    </div>                    
+                    </div>
                 </div>
                 
-                <div id="addnew">Add [+]</div>
+                <div id="addnew">
+                    Add [+]
+                    
+                    <div id="addNewTypes">
+                       
+                    </div>                
+                </div>
                 
             </div>
             

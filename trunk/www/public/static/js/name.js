@@ -157,6 +157,16 @@ ExtAPI.App.nodename.extend
 			
 		}
 		
+	},
+	
+	destroy								 :	function() {
+		
+		SOAPI.Event.removeEventHandler(this.name,"onmouseup",'name');
+		
+		this.el							 =	null;
+		this.name						 =	null;
+		this.input						 =	null;	
+		
 	}
 	
 });

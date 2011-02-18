@@ -6,13 +6,16 @@ ExtAPI.App.connections		 			 = 	SOAPI.Class.extension();
 ExtAPI.App.connections.extend
 ({
 	
-	domTypes							 :	new Object(),
-		
+	domTypes							 :	null,
+	rows								 :	null,
+	
 	mode								 :	'display',
 	
 	holder								 :	null,
 	searchEl							 :	null,
 	searched							 :	false,
+	
+	searchResults						 :	null,
 	
 	construct							 :	function() {
 		
@@ -20,8 +23,10 @@ ExtAPI.App.connections.extend
 		
 		if (window.node.edges) {
 			
+			this.domTypes				 =	new Object();
+			this.rows					 =	new Array();
 			this.domTypes.Movie			 =	$('movies');
-			this.domTypes.People		 =	$('people');	
+			this.domTypes.Person		 =	$('people');	
 			this.domTypes.Properties	 =	$('properties');
 			
 			this.processEdges();
@@ -47,7 +52,7 @@ ExtAPI.App.connections.extend
 		
 		while (ln--) {
 			
-			var connection				 =	new ExtAPI.App.connection(window.node.edges[ln],this.domTypes[window.node.edges[ln].to.type].children[1]);
+			this.rows.push(new ExtAPI.App.connection(window.node.edges[ln],this.domTypes[window.node.edges[ln].to.type].children[1],false));
 			
 		}
 		
@@ -90,13 +95,17 @@ ExtAPI.App.connections.extend
 			
 			this.destroyRows();
 			
+			this.searchResults			 =	null;
+			
 			if (response.length > 0) {
+				
+				this.searchResults		 = 	response;
 				
 				var ln 					 =	response.length;
 				
 				while (ln--) {
 					
-					this.addRow(response[ln]);
+					this.addResultRow(response[ln],ln);
 					
 				}
 				
@@ -113,7 +122,7 @@ ExtAPI.App.connections.extend
 		
 	},
 	
-	addRow								 :	function(data) {
+	addResultRow						 :	function(data,id) {
 		
 		var row							 =	SOAPI.createElement({
 					
@@ -121,7 +130,6 @@ ExtAPI.App.connections.extend
 			attributes 			 	 	 : 	{ 'class' : 'row' }
 			
 			});
-		
 		
 		row.onselectstart 				 = 	function() { return false; }
 		row.unselectable 		 		 = 	'on';
@@ -132,7 +140,7 @@ ExtAPI.App.connections.extend
 		var name						 = 	SOAPI.createElement({
 					
 			parent 						 : 	row,
-			content						 :	data.name,
+			content						 :	data.name + ' [' + data.type + ']',
 			attributes 					 : 	{ 'class' : 'name' }
 			
 			});
@@ -146,8 +154,7 @@ ExtAPI.App.connections.extend
 			attributes 					 : 	{
 				
 				'class' 				 : 	'add',
-				'type' 					 : 	data.type,
-				'_id'					 :	data._id
+				'id'					 :	id
 				
 				}
 			
@@ -169,7 +176,7 @@ ExtAPI.App.connections.extend
 				
 				SOAPI.Event.removeEventHandler(this.holder.children[ln],'mousedown','connections');
 				
-				this.holder.removeChild(this.holder.children[ln]);				
+				SOAPI.destroyElement(this.holder.children[ln]);				
 				
 			}		
 			
@@ -201,13 +208,32 @@ ExtAPI.App.connections.extend
 	
 	addConnection						 :	function(el) {
 		
-		if (el.getAttribute('_id') && el.getAttribute('type')) {
+		if (el.getAttribute('id')) {
 			
-			//console.log(this.domTypes[el.getAttribute('type')].children[1]);
+			var result					 =	this.searchResults[el.getAttribute('id')];
 			
-			//var connection				 =	new ExtAPI.App.connection(window.node.edges[ln],this.domTypes[el.getAttribute('type')].children[1]);	
+			this.rows.push(new ExtAPI.App.connection(result,this.domTypes[result.type].children[1],true));	
 			
 		}
+		
+	},
+	
+	destroy								 :	function() {
+		
+		SOAPI.Event.removeEventHandler(this.searchEl,	"keyup",	"connections");
+		SOAPI.Event.removeEventHandler(this.searchEl,	"mousedown","connections");
+		SOAPI.Event.removeEventHandler(this.searchEl,	"blur",		"connections");
+		
+		this.destroyRows();
+		
+		for (var i = 0; i < this.rows.length; i++)  	this.rows[i].destroy();
+		
+		this.domTypes					 =	null;
+		this.rows						 =	null;
+		this.holder						 =	null;
+		this.searchEl					 =	null;
+		this.searched					 =	false;
+		this.searchResults				 =	null;		
 		
 	}
 	
