@@ -1,33 +1,31 @@
 /**
  * -------------------------------------------------------------------------------- Nodename object
  */
-ExtAPI.App.nodename			 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.nodename.extend
+ExtAPI.App.nodename					 	 = 	Class.extend
 ({
 	
 	el									 :	null,
 	
-	name								 :	null,
+	h1									 :	null,
 	input								 :	null,
 	mode								 :	'display',
 	
-	construct							 :	function() {
+	init								 :	function() {
 		
-		if ($('name')) {
+		if ($('#name').length > 0) {
 			
 			var handlers				 =	ExtAPI.App.nodename.eventHandlers;
 			
-			this.el						 =	$('name');
-			this.name					 = 	this.el.children[0];
-			this.name.onselectstart 	 = 	function() { return false; }
-			this.name.unselectable 	 	 = 	'on';
-			this.name.style.MozUserSelect  =	'none';
+			this.el						 =	$('#name');
+			this.h1						 =	this.el.children();
 			
-			if (window.node.name != '')		this.name.innerHTML = window.node.name;
+			this.h1.disableSelection();
+			
+			if (window.currentNode.name != '')		this.h1.text(window.currentNode.name);
+			
+			this.h1.bind('mousedown',{ 'ref' : this }, handlers.h1.onmousedown);
 						
-			SOAPI.Event.addEventHandler(this.name,"onmouseup",[this,handlers.el.onmouseup],'name');
-			
 		}		
 		
 	},
@@ -38,28 +36,16 @@ ExtAPI.App.nodename.extend
 			
 			this.mode					 =	'edit';
 			
-			var value					 =	this.name != undefined ? this.name.innerHTML : '';		
+			var value					 =	this.h1 != undefined ? this.h1.text() : '';		
 			var handlers				 =	ExtAPI.App.nodename.eventHandlers;
 			
-			this.input					 =	SOAPI.createElement({
-				
-				type 					 : 	'input',
-				parent 					 : 	this.el,
-				
-				attributes 				 : 	{
-					
-					value 				 : 	value,
-					type 				 : 	'text',
-					id					 :	'nameInput'
-					
-					}
-				
-				});
+			this.input					 =	$('<input type="text"/>').attr('id','nameInput');
 			
+			this.el.append(this.input);
 			this.input.focus();
 			
-			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	"name");
-			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	"name");
+			this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
+			this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);
 			
 			this.setInterface();
 			
@@ -69,23 +55,22 @@ ExtAPI.App.nodename.extend
 	
 	saveInput							 :	function() {
 		
-		if (this.input.value != '' && (this.name.innerHTML != this.input.value)) {
+		if (this.input.val() && (this.h1.text() != this.input.val())) {
 			
 			var data					 =	new Object();
-			data._id					 =	window.node._id;
+			data._id					 =	window.currentNode._id;
 			data.key				 	 = 	'name';
-			data.value					 =	this.input.value;
-					
+			data.value					 =	this.input.val();
+			
 			var obj						 =	this;
-			SOAPI.Ajax.request({
-					
-				url						 :	'/ajax/',
-				dataType		 		 :	'post',
-				showProgress		 	 :	false,
-				data			 		 :	data,
-				onSuccess				 :	function(data){ obj.onResponse(data); }
-						
-				});
+			$.ajax({
+			
+				url 					 : 	'/ajax/',
+				type					 :	'post',
+				data 					 : 	data,
+				success 				 : 	function(data) { obj.onResponse(data) }
+				
+			});
 			
 			this.mode					 =	'saving';
 			this.setInterface();
@@ -126,32 +111,30 @@ ExtAPI.App.nodename.extend
 			
 			case 'saving':
 				
-				this.input.disabled		 =	true;
-				this.input.addClassName('saving');
+				this.input.attr('disabled', 'disabled');
+				this.input.addClass('saving');
 				
 			break;
 			
 			case 'edit':
 				
-				this.input.value		 =	this.name.innerHTML;
-				this.input.disabled		 =	false;
-				
-				this.input.removeClassName('saving');
-				this.name.hide();
+				this.input.val(this.h1.text());
+				this.input.removeAttr('disabled');
+				this.input.removeClass('saving');
+				this.h1.hide();
 				
 			break;
 			
 			case 'display':
 				
-				this.name.innerHTML		 =	this.input.value;
+				this.h1.text(this.input.val());
 				
-				SOAPI.Event.removeEventHandler(this.input,"blur",	"name");
-				SOAPI.Event.removeEventHandler(this.input,"keyup",	"name");
+				this.input.unbind();
+				this.input.remove();
 				
-				this.el.removeChild(this.input);
 				this.input 			 	=	null;
 				
-				this.name.show();
+				this.h1.show();
 				
 			break;
 			
@@ -161,10 +144,10 @@ ExtAPI.App.nodename.extend
 	
 	destroy								 :	function() {
 		
-		SOAPI.Event.removeEventHandler(this.name,"onmouseup",'name');
+		this.h1.unbind();
 		
 		this.el							 =	null;
-		this.name						 =	null;
+		this.h1							 =	null;
 		this.input						 =	null;	
 		
 	}
@@ -173,11 +156,13 @@ ExtAPI.App.nodename.extend
 
 ExtAPI.App.nodename.eventHandlers 	 	 = 	{
 	
-	el								 	 :	{
+	h1								 	 :	{
 		
-		onmouseup						 :	function(event) {
+		onmousedown						 :	function(event) {
 			
-			this.edit();
+			var ref						 =	event.data.ref;
+			
+			ref.edit();
 			
 			return true;
 						
@@ -189,7 +174,9 @@ ExtAPI.App.nodename.eventHandlers 	 	 = 	{
 		
 		onblur							 :	function(event)  {
 			
-			this.saveInput();	
+			var ref						 =	event.data.ref;
+			
+			ref.saveInput();	
 			
 			return true;
 		
@@ -197,7 +184,9 @@ ExtAPI.App.nodename.eventHandlers 	 	 = 	{
 		
 		onkeyup							 :	function(event) {
 			
-			if (event.event.keyCode == '13')	this.saveInput();
+			var ref						 =	event.data.ref;
+			
+			if (event.keyCode == '13')		ref.saveInput();
 			
 			return true;
 			

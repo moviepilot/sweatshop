@@ -6,10 +6,12 @@
     <title>Movie Pilot demo interface</title>
     
     <link rel="stylesheet" href="/static/css/global.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" type="text/css" media="screen" />
     
-    <script type="text/javascript" src="/soapi/js.php?soapi_widgets=slider" charset="utf-8"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" charset="utf-8"></script>
+     <script type="text/javascript" src="/static/jquery.class.js" charset="utf-8"></script>
     <script type="text/javascript" src="/static/app.php" charset="utf-8"></script>
-    <script type="text/javascript" src="/static/common.js" charset="utf-8"></script>
     
     <script>
         
@@ -37,6 +39,7 @@
                 
                 <div>
                     <select id="type">
+                        <option value="">Select...</option>
                         <option value="Movie">Movie</option>
                         <option value="Person">Person</option>
                         <option value="Category">Category</option>
@@ -50,7 +53,7 @@
                 
                 <h2>Movies</h2>
                 
-                <div></div>
+                <div id="moviesHolder"></div>
             </div>
             
         </div>
@@ -58,7 +61,7 @@
         <div class="column">
 
             <div id="nodeprops">
-                <div>
+                <div id="nodepropsholder">
                     <div class="header">
                         <div class="key" disabled="true">Key</div>
                         <div class="value" disabled="true">Value</div>
@@ -80,7 +83,7 @@
                 
                 <h2>People</h2>
                 
-                <div></div>
+                <div id="peopleHolder"></div>
                 
             </div>
 
@@ -93,9 +96,9 @@
                 <h2>Add a connection</h2>
                 
                 <div>
-                    <input type="text" id="searchConnections" value="search..." />
+                    <input type="text" id="searchConnections" />
                 
-                    <div id="holder"></div>
+                    <div id="searchholder"></div>
                 
                 </div>
                 
@@ -105,7 +108,7 @@
                 
                 <h2>Properties</h2>
                 
-                <div></div>
+                <div id="propertiesHolder"></div>
                 
             </div>
             

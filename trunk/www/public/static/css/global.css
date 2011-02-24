@@ -12,6 +12,10 @@ body {
 	color: #000;
 }
 
+a {
+	outline: 0;
+}
+
 ol,ul {
 	margin-left: 23px;
 }
@@ -265,32 +269,35 @@ div#wrapper div.column div.connection div.row div.name {
 }
 
 div#wrapper div.column div.connection > div > div.row.saving {
-	background: url('/static/images/ajax-loader.gif') 170px 7px no-repeat;
+	background: url('/static/images/ajax-loader.gif') 162px 7px no-repeat;
 }
 
 div#wrapper div.column div#connections input#searchConnections.searching {
 	background: url('/static/images/ajax-loader.gif') 98% 3px no-repeat;
 }
 
-div#wrapper div.column div#connections div#holder {
+div#wrapper div.column div#connections div#searchholder {
 	padding-top: 7px;
 }
 
-div#wrapper div.column div#connections div#holder div {
+div#wrapper div.column div#connections div#searchholder div {
 	float: left;
 }
 
-div#wrapper div.column div#connections div#holder div.row {
+div#wrapper div.column div#connections div#searchholder div.row {
 	clear: left;
 	width: 100%;
 	padding: 5px 0;
 }
 
-div#wrapper div.column div#connections div#holder div.row div.name {
-	width: 91%;	
+div#wrapper div.column div#connections div#searchholder div.row div.name {
+	width: 91%;
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
-div#wrapper div.column div#connections div#holder div.row div.add {
+div#wrapper div.column div#connections div#searchholder div.row div.add {
 	width: 20px;
 	color: blue;
 	cursor: pointer;
@@ -300,42 +307,16 @@ div#wrapper div.column div#connections div#holder div.row div.add {
  * ------------------------------------------------------------------------------------ Slider widget
  */
 
-div#wrapper div.column div.connection div > div[widget=slider] {
-	width: 70px;
-	position: relative;
+div#wrapper div.column div.connection div > div.weight {
 	float: right;
+    height: 5px;
+    width: 72px;
+	margin-top: 8px;
 }
 
-div#wrapper div.column div.connection div > div[widget=slider] div {
-	float: none;
-}
-
-div#wrapper div.column div.connection div > div[widget=slider] div[component=track] {
-	width: 70px;
-	background: #5A5A5B;
-	height: 2px;
-	position: absolute;
-	top: 10px;
-	left: 0px;
-}
-
-div#wrapper div.column div.connection div > div[widget=slider] div[component=handle] {
-	height: 11px;
-	background: #ccc;
-	position: absolute;
+div#wrapper div.column div.connection div > div.weight a.ui-slider-handle {
+	margin-top: -3px;
 	cursor: pointer;
-	top: 6px;
-	left: 0px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-}
-
-div#wrapper div.column div.connection div > div[widget=slider] div[component=upleft],
-div#wrapper div.column div.connection div > div[widget=slider] div[component=downright]
-{
-	display: none;
-	visibility: hidden;
-	opacity: 0;
 }
 
 /**
@@ -345,17 +326,19 @@ div#wrapper div.column div.connection div > div[widget=slider] div[component=dow
 div#wrapper div#breadcrumb {
 	overflow: hidden;
 	margin-bottom: 10px;
+	height: 22px;
+	
 }
 
 div#wrapper div#breadcrumb > div {
 	float: left;
-	text-decoration: underline;
 	color: blue;
-	margin-right: 10px;
+	margin-right: 16px;
 	cursor: pointer;
+	text-indent: -10px;
 }
 
-div#wrapper div#breadcrumb > div.seperator {
-	text-decoration: none;
+div#wrapper div#breadcrumb > div::before {
+	content: ">  ";
 	color: #ccc;
 }

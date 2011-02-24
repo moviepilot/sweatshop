@@ -1,9 +1,8 @@
 /**
  * -------------------------------------------------------------------------------- Fedback object
  */
-ExtAPI.App.feedback			 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.feedback.extend
+ExtAPI.App.feedback				 		 = 	Class.extend
 ({
 	
 	el									 :	null,
@@ -17,21 +16,19 @@ ExtAPI.App.feedback.extend
 	_MESSAGE_ERROR					  	 :	'Please provide a feedback message',
 	_TYPE_ERROR							 :	'Please select an existing feedback type',
 	
-	construct							 :	function() {
+	init								 :	function() {
 		
-		if ($('feedback')) {
+		if ($('#feedback').length > 0) {
 			
-			this.el						 =	$('feedback');
+			this.el						 =	$('#feedback');
 			this.el.hide();
 			
-			var animator					 =	new SOAPI.Animator(new SOAPI.Sprite(this.el), "fadeout");
-		
 		}		
 		
 	},
 	
 	showMessage							 :	function(type,message) {
-		
+	
 		if (this.el) {
 			
 			var className				 =	null;
@@ -60,7 +57,8 @@ ExtAPI.App.feedback.extend
 			
 			if (className != null) {
 				
-				this.el.setAttribute('class',className);
+				this.el.removeClass();
+				this.el.addClass(className);
 				
 				if (message != undefined) {
 				
@@ -72,9 +70,8 @@ ExtAPI.App.feedback.extend
 					
 					}
 				
-					this.el.innerHTML	 =	message.trim();
-					this.el.show();
-					this.el.styleTo('opacity',1);
+					this.el.text(message);
+					this.el.stop().show().css('opacity',1);
 					
 					if (type != this._ERROR) {
 					
@@ -92,7 +89,7 @@ ExtAPI.App.feedback.extend
 				
 			} else {
 				
-				this.el.removeAttribute('class');
+				this.el.removeClass();
 				throw this._TYPE_ERROR;
 				
 			}
@@ -112,17 +109,7 @@ ExtAPI.App.feedback.extend
 		
 		this.updateTimeout 	 = 	null;
 		
-		var el							 =	this.el;
-		var animator 				 	 =	el.animators.fadeout;
-		
-		var opacity						 =	el.get("opacity");
-		
-		animator.addAnimation(1,
-			{ opacity 					 : 	SOAPI.Transition.generate([new Array('Linear','In',15)], opacity, 0)  },
-			{ interval: 10, repeat: false, relative: false, action:  [function(){ el.hide(); }] }
-		);
-		
-		animator.Play(1);
+		this.el.fadeOut(1000);
 		
 	}
 	

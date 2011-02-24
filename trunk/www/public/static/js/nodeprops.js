@@ -1,53 +1,56 @@
 /**
  * -------------------------------------------------------------------------------- Nodeprops object
  */
-ExtAPI.App.nodeprops		 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.nodeprops.extend
+ExtAPI.App.nodeprops				 	 = 	Class.extend
 ({
 	
-	el									 :	null,
+	holder								 :	null,
+	addNew							 	 :	null,
 	
 	rows								 :	null,
-	holder								 :	null,
+	
 	input								 :	null,
 	curreEl								 :	null,
 	initVal								 :	null,
+	keyVal								 :	null,
 	
 	mode								 :	'display',
 	
 	proptypes							 :	null,
 	
-	construct							 :	function() {
+	init 								 :	function() {
 		
-		if ($('nodeprops')) {
+		if ($('#nodeprops').length > 0) {
 			
-			var handlers				 =	ExtAPI.App.nodeprops.eventHandlers;
+			var currNode				 =	window.currentNode;
 			
-			this.el						 =	$('nodeprops');
-			this.holder					 =	this.el.children[0];
+			this.holder					 =	$('#nodepropsholder');
+			this.addNew					 =	$('#addNewTypes');
+			
 			this.rows					 =	new Array();
 			this.proptypes				 =	['facebook_id','moviemaster_id','permalink'];
 			this.initVal				 =	0;
+			this.keyVal					 =	'';
 			
 			//~ Just for demo purposes - should really be some sort of key value type thing so that it's felexible
-		
-			if (window.node._id)			this.addRow('_id',				window.node._id,			true,false);
-	
-			if (window.node.facebook_ids != undefined && window.node.facebook_ids.length > 0) {
+			
+			if (currNode._id)				this.addRow('_id', currNode._id, true);
+			
+			if (currNode.facebook_ids != undefined && currNode.facebook_ids.length > 0) {
 				
-				for (var i = 0; i < window.node.facebook_ids.length; i++) {
+				var ln 					=	currNode.facebook_ids.length;
+				
+				for (var i = 0; i < ln; i++) {
 					
-					this.addRow('facebook_id',window.node.facebook_ids[i],false,true);
+					this.addRow('facebook_id',currNode.facebook_ids[i],false);
 					
 				}
 				
 			}
 			
-			if (window.node.moviemaster_id)	this.addRow('moviemaster_id',	window.node.moviemaster_id,	false,true);
-			if (window.node.permalink)		this.addRow('permalink',		window.node.permalink,		false,true);
-			
-			SOAPI.Event.addEventHandler(this.holder,	"onmouseup",		[this,handlers.holder.onmouseup],'nodeprops');
+			if (currNode.moviemaster_id)	this.addRow('moviemaster_id', currNode.moviemaster_id, false);
+			if (currNode.permalink)			this.addRow('permalink', currNode.permalink, false);
 			
 			this.addTypes();
 							
@@ -57,24 +60,28 @@ ExtAPI.App.nodeprops.extend
 	
 	addTypes							 :	function() {
 		
+		//~ This is only to give an idea of how it will work, until we've decided ultimatelly how props will work
+		
 		var ln							 =	this.proptypes.length;
-		var typeList					 =	$('addNewTypes');
 		var handlers					 =	ExtAPI.App.nodeprops.eventHandlers;
 		
 		while (ln--) {
 			
-			var listItem				 =	SOAPI.createElement({ parent : typeList,content	: this.proptypes[ln] });
+			var value					 = 	$('<div />').text(this.proptypes[ln]);
 			
-			SOAPI.Event.addEventHandler(listItem,		"onmouseup",		[this,handlers.addNew.onmouseup],'nodeprops');
+			value.bind('mousedown',{ ref : this }, handlers.addNew.onmousedown);
+			
+			this.addNew.append(value);
 			
 		}
 		
 	},
 	
-	addRow						 		 :	function(key,value,protect,del) {
+	addRow						 		 :	function(key,value,protect) {
 	
 		//~ Remove types that we've already go on load
 		
+		var handlers				 	 =	ExtAPI.App.nodeprops.eventHandlers;
 		var ln							 =	this.proptypes.length;
 		
 		while (ln--) {
@@ -85,65 +92,41 @@ ExtAPI.App.nodeprops.extend
 		
 		//~ Row
 		
-		var row							 =	SOAPI.createElement({
-					
-			parent 				 	 	 : 	this.holder,
-			attributes 			 	 	 : 	{
-				
-				'class'			 	 	 : 	'row'
-								
-				}
-			
-			});
+		var row							 =	$('<div />').addClass('row');
 		
-		// ~ Key
+		row.disableSelection();
 		
-		SOAPI.createElement({
-					
-			parent 						 : 	row,
-			content						 :	key,
-			attributes 					 : 	{
-				
-				'class'					 : 	'key',
-				'disabled'				 :	protect
-				
-				}
-			
-			});
+		//~ Key
+		
+		var keycol						 =	$('<div />').addClass('key');							
+		
+		keycol.text(key);
+		row.append(keycol);
 		
 		//~ Value
 		
-		SOAPI.createElement({
-					
-			parent 						 : 	row,
-			content						 :	value,
-			attributes 					 : 	{
-				
-				'class'					 : 	'value',
-				'disabled'				 :	protect
-				
-				}
-			
-			});
+		var valcol						 =	$('<div />').addClass('value');	
 		
-		//~ Del button
+		valcol.text(value);
+		row.append(valcol);
 		
-		if (del) {
+		//~ Don't add listeners, or del if the row needs to be proteced
+		
+		if (!protect) {
 			
-			SOAPI.createElement({
-					
-				parent 					 : 	row,
-				content					 :	'[x]',
-				attributes 				 : 	{
-				
-					'class'				 : 	'del',
-					'disabled'			 :	false
-					
-					}
-				
-				});
+			var delcol					 =	$('<div />').addClass('del');
+			
+			delcol.text('[x]');
+			row.append(delcol);
+			
+			valcol.bind('mousedown',{ ref : this , keyRef : key }, handlers.value.onmousedown);
+			delcol.bind('mousedown',{ ref : this , row : row }, handlers.del.onmousedown);
 			
 		}
+		
+		//~ Add the row
+		
+		this.holder.append(row);
 		
 		this.rows.push(row);
 		
@@ -151,73 +134,68 @@ ExtAPI.App.nodeprops.extend
 		
 	},
 	
-	edit								 :	function(element) {
+	edit								 :	function(event) {
 		
 		if (this.mode == 'display') {
 			
-			this.curreEl				 = 	element;
 			this.mode					 =	'edit';
 			
-			var value					 =	this.initVal = element.innerHTML;		
+			this.curreEl				 = 	$(event.target);
+			this.keyVal					 =	event.data.keyRef;
+			this.initVal 				 = 	this.curreEl.text();
+			
 			var handlers				 =	ExtAPI.App.nodeprops.eventHandlers;
 			
-			this.curreEl.innerHTML		 =	'';
-				
-			this.input					 =	SOAPI.createElement({
+			this.curreEl.empty();
 			
-			type 						 : 	'input',
-			parent 						 : 	element,
-				
-			attributes 					 : 	{
-						
-				value 					 : 	value,
-				type 					 : 	'text',
-				id						 :	'keyInput'
-				
-				}
+			this.input					 =	$('<input type="text"/>').attr('id','keyInput');
 			
-			});
+			this.curreEl.append(this.input);
 			
 			this.input.focus();
-			
-			SOAPI.Event.addEventHandler(this.input,	"blur",		[this,handlers.input.onblur],	'nodeprops');
-			SOAPI.Event.addEventHandler(this.input,	"keyup",	[this,handlers.input.onkeyup],	'nodeprops');
 						
+			this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
+			this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);
+			
 			this.setInterface();
 			
 		}
 		
 	},
 	
-	removeProperty						 :	function(element) {
+	removeProperty						 :	function(event) {
+		
+		var row							 =	event.data.row;
+		var target						 =	$(event.target);
 		
 		var data						 =	new Object();
-		data._id						 =	window.node._id;
+		data._id						 =	window.currentNode._id;
 		data.key				 		 = 	'nodepropremove';
-		data.value						 =	element.parentNode.children[0].innerHTML;
+		data.value						 =	row.children('.key').text();
 		
-		var obj							 =	this;
-		SOAPI.Ajax.request({
-				
-			url							 :	'/ajax/',
-			dataType		 			 :	'post',
-			showProgress		 		 :	false,
-			data			 			 :	data,
-			onSuccess					 :	function(data){ obj.onResponse(data); }
-					
-			});
+		row.remove();
 		
-		this.holder.removeChild(element.parentNode);
+		var obj						 =	this;
+		$.ajax({
+		
+			url 					 : 	'/ajax/',
+			type					 :	'post',
+			data 					 : 	data,
+			success 				 : 	function(data) { obj.onResponse(data) }
+			
+		});
 		
 	},
 	
 	saveInput							 :	function() {
 		
-		if (this.input.value != '' && (this.input.value != this.initVal)) {
+		if (this.input.val() && (this.input.val() != this.initVal)) {
+			
+			this.mode					 =	'saving';
 			
 			var data					 =	new Object();
-			data._id					 =	window.node._id;
-			data.key				 	 = 	this.curreEl.parentNode.children[0].innerHTML;
+			data._id					 =	window.currentNode._id;
+			data.key				 	 = 	this.keyVal;
 			
 			if (data.key == 'facebook_id') {
 				
@@ -226,22 +204,19 @@ ExtAPI.App.nodeprops.extend
 				
 			} else {
 				
-				data.value 				 = 	this.input.value;
+				data.value 				 = 	this.input.val();
 			
 			}
 			
 			var obj						 =	this;
-			SOAPI.Ajax.request({
-					
-				url						 :	'/ajax/',
-				dataType		 		 :	'post',
-				showProgress		 	 :	false,
-				data			 		 :	data,
-				onSuccess				 :	function(data){ obj.onResponse(data); }
-						
-				});
+			$.ajax({
 			
-			this.mode					 =	'saving';
+				url 					 : 	'/ajax/',
+				type					 :	'post',
+				data 					 : 	data,
+				success 				 : 	function(data) { obj.onResponse(data) }
+				
+			});
 			
 		} else {
 			
@@ -260,7 +235,7 @@ ExtAPI.App.nodeprops.extend
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
 			
 			this.mode					 =	'display';
-			this.initVal				 = 	this.input == null ? 0 : this.input.value;
+			this.initVal				 = 	this.input == null ? 0 : this.input.val();
 			
 		} else	{
 				
@@ -280,19 +255,19 @@ ExtAPI.App.nodeprops.extend
 		
 		for (var i = 0; i < this.rows.length; i++) {
 			
-			var key						 =	this.rows[i].children[0].innerHTML;
+			var key						 =	this.rows[i].children('.key').text();
 			
 			if (key == 'facebook_id') {
 				
-				if (!this.rows[i].contains(this.curreEl))	facebookIds.push(this.rows[i].children[1].innerHTML);	
+				if (this.rows[i][0] == this.curreEl.parent()[0])	facebookIds.push(this.input.val());
 				else
-															facebookIds.push(this.input.value);
+																	facebookIds.push(this.rows[i].children('.value').text());
 				
 			}
 			
 		}
 		
-		return facebookIds;
+		return facebookIds.toString();
 		
 	},
 	
@@ -303,17 +278,16 @@ ExtAPI.App.nodeprops.extend
 			
 			case 'saving':
 				
-				this.input.disabled		 =	true;
-				this.input.addClassName('saving');
+				this.input.attr('disabled', 'disabled');
+				this.input.addClass('saving');
 				
 			break;
 			
 			case 'edit':
 				
-				this.input.value		 =	this.initVal;
-				this.input.disabled		 =	false;
-				
-				this.input.removeClassName('saving');
+				this.input.val(this.initVal);
+				this.input.removeAttr('disabled');
+				this.input.removeClass('saving');
 				
 			break;
 			
@@ -321,13 +295,10 @@ ExtAPI.App.nodeprops.extend
 				
 				if (this.input != null) {
 				
-					SOAPI.Event.removeEventHandler(this.input,"blur",	"nodeprops");
-					SOAPI.Event.removeEventHandler(this.input,"keyup",	"nodeprops");
-					
-					this.curreEl.removeChild(this.input);
+					this.input.unbind();
+					this.input.remove();
 									
-					this.input				 = 	null;
-					this.curreEl.innerHTML 	 =	this.initVal;
+					this.curreEl.text(this.initVal);
 				
 				}
 				
@@ -339,22 +310,26 @@ ExtAPI.App.nodeprops.extend
 	
 	destroy								 :	function() {
 		
-		SOAPI.Event.removeEventHandler(this.holder, "onmouseup",'nodeprops');
+		this.addNew.children().unbind();
+		this.addNew.children().remove();
+				
+		var ln							 =	this.rows.length;
 		
-		var ln							 =	$('addNewTypes').children.length;
+		while (ln--) {
+			
+			this.rows[ln].children().unbind();
+			this.rows[ln].empty();
+			this.rows[ln].remove();
+			this.rows[ln]				 =	null;
+						
+		}
 		
-		while (ln--) 						SOAPI.Event.removeEventHandler($('addNewTypes').children[ln],"onmouseup",'nodeprops');
-		
-		$('addNewTypes').innerHTML		 =	'';
-		
-		ln								 =	this.rows.length;
-		
-		while (ln--)						SOAPI.destroyElement(this.rows[ln]);
-		
+		this.rows						 =	null;
 		this.holder						 =	null;
 		this.input						 =	null;
 		this.curreEl					 =	null;
 		this.initVal					 =	null;
+		this.keyVal						 =	null;
 		
 	}
 	
@@ -362,18 +337,28 @@ ExtAPI.App.nodeprops.extend
 
 ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 	
-	holder								 :	{
+	value								 :	{
 		
-		onmouseup						 :	function(event) {
+		onmousedown						 :	function(event) {
 			
-			if (event.event.target.getAttribute('disabled') == 'false' && this.mode == 'display') {
+			var ref 					 =	event.data.ref;
 			
-				if (event.event.target.hasClassName('value'))	this.edit(event.event.target);
-				
-				if (event.event.target.hasClassName('del'))		this.removeProperty(event.event.target);
-				
-			}
+			ref.edit(event);
 			
+			return true;		
+			
+		}		
+		
+	},
+	
+	del									 :	{
+		
+		onmousedown						 :	function(event) {
+			
+			var ref 					 =	event.data.ref;
+			
+			ref.removeProperty(event);
+						
 			return true;		
 			
 		}		
@@ -384,7 +369,9 @@ ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 		
 		onblur							 :	function(event)  {
 			
-			this.saveInput();	
+			var ref 					 =	event.data.ref;
+			
+			ref.saveInput();	
 			
 			return true;
 		
@@ -392,7 +379,9 @@ ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 		
 		onkeyup							 :	function(event) {
 			
-			if (event.event.keyCode == '13')	this.saveInput();
+			var ref 					 =	event.data.ref;
+			
+			if (event.keyCode == '13')	ref.saveInput();
 			
 			return true;
 			
@@ -402,11 +391,14 @@ ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 	
 	addNew								 :	{
 		
-		onmouseup						 :	function(event) {
+		onmousedown						 :	function(event) {
 			
-			var row						 =	this.addRow(event.element.innerHTML,'enter value...',false,true);
+			var target					 =	$(event.target);
+			var ref 					 =	event.data.ref;
 			
-			if (event.element.innerHTML != 'facebook_id')	event.element.parentNode.removeChild(event.element);
+			ref.addRow(target.text(),'enter value...',false);
+			
+			if (target.text() != 'facebook_id')	target.remove();
 			
 			return true;		
 			

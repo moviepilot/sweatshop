@@ -1,27 +1,21 @@
 /**
  * -------------------------------------------------------------------------------- Main init object
  */
-window.node								 =	new Object();
+window.currentNode							 =	new Object();
+window.ExtAPI							 =	new Object();
 
-window.ExtAPI 							 = 	window.ExtAPI || {};
-
-ExtAPI.App 					 			 = 	SOAPI.Class.extension();
-
-ExtAPI.App.extend
+ExtAPI.App								 = 	Class.extend
 ({
-	
-	construct							 :	function() {
+
+	init								 :	function() {
 		
-		ExtAPI.Feedback					 = 	new ExtAPI.App.feedback();
-		ExtAPI.Node						 =	new ExtAPI.App.node();
+		ExtAPI.Feedback				 	 = 	new ExtAPI.App.feedback();
+		ExtAPI.Node					 	 =	new ExtAPI.App.node();
 		
-		// This is just here for demo purposes, as we don't know how were are getting to this point
+		ExtAPI.Node.getNode(window.intiNodeId);	
 		
-		ExtAPI.Node.getNode(window.intiNodeId);		
-				
 	}
-	
+
 });
 
-window.setup2							 =	function() { new ExtAPI.App(); }
-
+$(document).ready(function() { new ExtAPI.App(); });

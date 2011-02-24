@@ -1,9 +1,8 @@
 /**
  * -------------------------------------------------------------------------------- Connection object
  */
-ExtAPI.App.connection		 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.connection.extend
+ExtAPI.App.connection					 = 	Class.extend
 ({
 	
 	connection							 :	null,
@@ -15,7 +14,7 @@ ExtAPI.App.connection.extend
 	
 	updateTimer							 :	null,
 	
-	construct							 :	function(connection,parentEl,newCon) {
+	init								 :	function(connection,parentEl,newCon) {
 		
 		this.parentEl				 	 = 	parentEl;
 		
@@ -51,50 +50,41 @@ ExtAPI.App.connection.extend
 		
 		//~ Row
 		
-		this.row						 =	SOAPI.createElement({
-					
-			parent 				 	 	 : 	this.parentEl,
-			attributes 			 	 	 : 	{ 'class' : 'row' }
-			
-			});
+		this.row						 =	$('<div />').addClass('row');
 		
+		this.row.disableSelection();
 		
-		this.row.onselectstart 			 = 	function() { return false; }
-		this.row.unselectable 		 	 = 	'on';
-		this.row.style.MozUserSelect	 =	'none';
+		//~ Name
 		
-		// ~ Name
+		this.name						 =	$('<div />').addClass('name');
 		
-		this.name						 = 	SOAPI.createElement({
-					
-			parent 						 : 	this.row,
-			content						 :	this.connection.to.name,
-			attributes 					 : 	{ 'class' : 'name' }
-			
-			});
+		this.name.text(this.connection.to.name);
+		this.row.append(this.name);
 		
 		//~ Weight
 		
-		this.weight						 = 	SOAPI.createElement({
-					
-			parent 						 : 	this.row,
-			attributes 					 : 	{
-				
-				'widget' 				 : 	'slider',
-				'value' 				 : 	(this.connection.weight * 100),
-				'min'					 :	0,
-				'max'					 :	100
-				
-				}
-			
-			});	
+		this.weight						 =	$('<div />').addClass('weight');
 		
-		SOAPI.buildWidgets(this.row);		
+		this.weight.slider({
+			
+			range						 : 	'max',
+			min							 : 	0,
+			max							 : 	100,
+			step						 :	10,
+			value					 	 :	(this.connection.weight * 100)
+		
+			});
+		
+		this.row.append(this.weight);
+				
+		//~ Add the row
+		
+		this.parentEl.append(this.row);
 		
 		var handlers					 =	ExtAPI.App.connection.eventHandlers;
 		
-		SOAPI.Event.addEventHandler(this.name,		"onmouseup",	[this,handlers.name.onmouseup],		"connection");
-		SOAPI.Event.addEventHandler(this.weight,	"scrollend",	[this,handlers.slider.scrollend],	"connection");
+		this.name.bind('mousedown',		{ ref : this }, handlers.name.mousedown);
+		this.weight.bind('slidestop',	{ ref : this }, handlers.slider.slidestop);
 		
 	},
 	
@@ -109,22 +99,21 @@ ExtAPI.App.connection.extend
 			data.nodeid					 =	this.connection.to._id;
 			data.key				 	 = 	'edge';
 			data.weight					 =	value;
-				
-			var obj						 =	this;
-			SOAPI.Ajax.request({
-					
-				url						 :	'/ajax/',
-				dataType		 		 :	'post',
-				showProgress		 	 :	false,
-				data			 		 :	data,
-				onSuccess				 :	function(data){ obj.onResponse(data); }
 						
-				});
+			var obj						 =	this;
+			$.ajax({
+			
+				url 					 : 	'/ajax/',
+				type					 :	'post',
+				data 					 : 	data,
+				success 				 : 	function(data) { obj.onResponse(data) }
+				
+			});
 			
 			this.mode					 =	'saving';
 			this.setInterface();
 						
-		}		
+		}	
 		
 	},
 	
@@ -145,13 +134,13 @@ ExtAPI.App.connection.extend
 			
 			case 'saving':
 				
-				this.row.addClassName('saving');
+				this.row.addClass('saving');
 				
 			break;
 			
 			case 'display':
 				
-				this.row.removeClassName('saving');
+				this.row.removeClass('saving');
 				
 			break;
 			
@@ -161,17 +150,17 @@ ExtAPI.App.connection.extend
 	
 	destroy								 :	function() {
 		
-		SOAPI.Event.removeEventHandler(this.name,	"onmouseup", "connection");
-		SOAPI.Event.removeEventHandler(this.weight,	"scrollend", "connection");
+		this.name.unbind();
+		this.weight.unbind();
 		
-		// We should put in something to destroy the widget...
-		
-		SOAPI.destroyElement(this.name);
-		SOAPI.destroyElement(this.weight);
-		SOAPI.destroyElement(this.row);
+		this.name.remove();
+		this.weight.remove();
+		this.row.remove();
 		
 		this.connection					 =	null;
 		this.parentEl					 =	null;
+		this.name						 =	null;
+		this.weight						 =	null;
 		this.row						 = 	null;
 		this.updateTimer				 =	null;
 		
@@ -183,9 +172,11 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 	
 	name								 :	{
 		
-		onmouseup						 :	function(event) {
+		mousedown						 :	function(event) {
 			
-			ExtAPI.Node.getNode(this.connection.to._id);
+			var ref						 =	event.data.ref;
+			
+			ExtAPI.Node.getNode(ref.connection.to._id);
 						
 			return true;
 			
@@ -195,18 +186,20 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 	
 	slider								 :	{
 		
-		scrollend						 :	function(event) {
+		slidestop						 :	function(event,ui) {
 			
-			if (this.updateTimer != null) {
+			var ref						 =	event.data.ref;
+			
+			if (ref.updateTimer != null) {
 				
-				clearTimeout(this.updateTimer);
+				clearTimeout(ref.updateTimer);
 				
-				this.updateTimer		 =	null;
+				ref.updateTimer		 	 =	null;
 				
 			}
 			
-			var obj						 =	this;
-			this.updateTimer			 = 	setTimeout(function(){ obj.saveInput(event.element.value.toPrecision(1)); },2000);
+			ref.updateTimer			 = 	setTimeout(function(){ ref.saveInput(Number(ui.value / 100).toPrecision(1)); },2000);
+			
 			
 			return true;
 			

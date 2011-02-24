@@ -29,7 +29,7 @@ function curlput($url,$putData) {
 header('Cache-Control: no-cache, must-revalidate');
 header('Content-type: application/json');
 
-$repsonse								 =	array();
+$response								 =	array();
 $url									 =	'http://devbox:6677/';
 
 if (isset($_POST['key']) && !empty($_POST['key'])) {

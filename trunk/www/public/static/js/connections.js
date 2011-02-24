@@ -1,9 +1,8 @@
 /**
  * -------------------------------------------------------------------------------- Connections object
  */
-ExtAPI.App.connections		 			 = 	SOAPI.Class.extension();
 
-ExtAPI.App.connections.extend
+ExtAPI.App.connections					 = 	Class.extend
 ({
 	
 	domTypes							 :	null,
@@ -17,30 +16,29 @@ ExtAPI.App.connections.extend
 	
 	searchResults						 :	null,
 	
-	construct							 :	function() {
+	init								 :	function() {
 		
 		var handlers					 =	ExtAPI.App.connections.eventHandlers;
 		
-		if (window.node.edges) {
-			
-			this.domTypes				 =	new Object();
-			this.rows					 =	new Array();
-			this.domTypes.Movie			 =	$('movies');
-			this.domTypes.Person		 =	$('people');	
-			this.domTypes.Properties	 =	$('properties');
-			
-			this.processEdges();
-			
-		}
+		this.domTypes				  	 =	new Object();
+		this.rows					 	 =	new Array();
 		
-		if ($('searchConnections'))	{
+		this.domTypes.Movie				 =	$('#moviesHolder');
+		this.domTypes.Person			 =	$('#peopleHolder');	
+		this.domTypes.Properties		 =	$('#propertiesHolder');
 			
-			this.searchEl 				 = 	$('searchConnections');
-			this.holder					 =	$('holder');
+		this.processEdges();
+		
+		if ($('#searchConnections').length > 0 && $('#searchholder').length > 0)	{
 			
-			SOAPI.Event.addEventHandler(this.searchEl,	"keyup",		[this,handlers.searchEl.onkeyup],		"connections");
-			SOAPI.Event.addEventHandler(this.searchEl,	"mousedown",	[this,handlers.searchEl.onmousedown],	"connections");
-			SOAPI.Event.addEventHandler(this.searchEl,	"blur",			[this,handlers.searchEl.onblur],		"connections");
+			this.searchEl 				 = 	$('#searchConnections');
+			this.holder					 =	$('#searchholder');
+						
+			this.searchEl.bind('keyup',		{ 'ref' : this }, handlers.searchEl.onkeyup);
+			this.searchEl.bind('mousedown',	{ 'ref' : this }, handlers.searchEl.onmousedown);
+			this.searchEl.bind('blur',		{ 'ref' : this }, handlers.searchEl.onblur);
+		
+			this.searchEl.val('search...');
 			
 		}
 		
@@ -48,37 +46,35 @@ ExtAPI.App.connections.extend
 	
 	processEdges						 :	function() {
 		
-		var ln 							 = 	window.node.edges.length;
+		var edges						 =	window.currentNode.edges;
+		var ln 							 = 	edges.length;
 		
-		while (ln--) {
-			
-			this.rows.push(new ExtAPI.App.connection(window.node.edges[ln],this.domTypes[window.node.edges[ln].to.type].children[1],false));
-			
-		}
+		while (ln--) 						this.rows.push(new ExtAPI.App.connection(edges[ln],this.domTypes[edges[ln].to.type],false));
 		
 	},
 	
 	doSearch						 	 :	function() {
 		
-		if (this.searchEl.value != '' && !this.searched) {
+		if (this.searchEl.val() && !this.searched) {
 			
 			this.searched				 =	true;
 			this.mode					 =	'searching';
 			
 			var data					 =	new Object();
-			data.search					 = 	this.searchEl.value;				
+			data.search					 = 	this.searchEl.val();				
 			
-			var obj						 =	this;			
-			SOAPI.Ajax.request({
-					
-				url						 :	'/node/',
-				dataType		 		 :	'post',
-				showProgress		 	 :	false,
-				data			 		 :	data,
-				onSuccess				 :	function(data){ obj.onResponse(data); }
-						
-				});
+			this.searchEl.blur();
 			
+			var obj						 =	this;
+			$.ajax({
+			
+				url 					 : 	'/node/',
+				type					 :	'post',
+				data 					 : 	data,
+				success 				 : 	function(data) { obj.onResponse(data) }
+				
+			});
+				
 			this.setInterface();
 			
 		}
@@ -93,7 +89,7 @@ ExtAPI.App.connections.extend
 		
 		} else {
 			
-			this.destroyRows();
+			this.destroySearchRows();
 			
 			this.searchResults			 =	null;
 			
@@ -111,7 +107,7 @@ ExtAPI.App.connections.extend
 				
 			} else {
 				
-				SOAPI.createElement({ parent : this.holder , content : 'No results' });
+				this.holder.append($('<div />').text('No results'));
 				
 			}
 		
@@ -124,63 +120,42 @@ ExtAPI.App.connections.extend
 	
 	addResultRow						 :	function(data,id) {
 		
-		var row							 =	SOAPI.createElement({
-					
-			parent 				 	 	 : 	this.holder,
-			attributes 			 	 	 : 	{ 'class' : 'row' }
-			
-			});
+		//~ Row
 		
-		row.onselectstart 				 = 	function() { return false; }
-		row.unselectable 		 		 = 	'on';
-		row.style.MozUserSelect			 =	'none';
-	
-		// ~ Name
+		var row							 =	$('<div />').addClass('row');
 		
-		var name						 = 	SOAPI.createElement({
-					
-			parent 						 : 	row,
-			content						 :	data.name + ' [' + data.type + ']',
-			attributes 					 : 	{ 'class' : 'name' }
-			
-			});
+		row.attr('id',id);
+		row.disableSelection();
+		
+		//~ Name
+		
+		var name						 =	$('<div />').addClass('name');
+		
+		name.text(data.name);
+		row.append(name);
 		
 		//~ Add
 		
-		var add							 = 	SOAPI.createElement({
-					
-			parent 						 : 	row,
-			content						 :	'[+]',
-			attributes 					 : 	{
+		var add							 =	$('<div />').addClass('add');
+		
+		add.text('[+]');
+		row.append(add);
 				
-				'class' 				 : 	'add',
-				'id'					 :	id
-				
-				}
-			
-			});	
+		//~ Add the row
+		
+		this.holder.append(row);
 		
 		var handlers					 =	ExtAPI.App.connections.eventHandlers;
 		
-		SOAPI.Event.addEventHandler(add,'mousedown',[this,handlers.searchResults.onmousedown],'connections');
+		add.bind('mousedown',	{ ref : this }, handlers.searchResults.onaddmousedown);
+		name.bind('mousedown',	{ ref : this }, handlers.searchResults.onnamemousedown);
 		
 	},
 	
-	destroyRows							 :	function() {
+	destroySearchRows					 :	function() {
 		
-		if (this.holder.children.length > 0) {
-			
-			var ln						 =	this.holder.children.length;
-			
-			while (ln --) {
-				
-				SOAPI.Event.removeEventHandler(this.holder.children[ln],'mousedown','connections');
-				
-				SOAPI.destroyElement(this.holder.children[ln]);				
-				
-			}		
-			
-		}	
+		this.holder.children().children().unbind();
+		this.holder.empty();
 		
 	},
 	
@@ -190,15 +165,15 @@ ExtAPI.App.connections.extend
 			
 			case 'searching':
 				
-				this.searchEl.disabled	 =	true;
-				this.searchEl.addClassName('searching');
+				this.searchEl.attr('disabled', 'disabled');
+				this.searchEl.addClass('searching');
 				
 			break;
 			
 			case 'display':
 				
-				this.searchEl.disabled	 =	false;
-				this.searchEl.removeClassName('searching');
+				this.searchEl.removeAttr('disabled');
+				this.searchEl.removeClass('searching');
 				
 			break;
 			
@@ -206,27 +181,26 @@ ExtAPI.App.connections.extend
 		
 	},
 	
-	addConnection						 :	function(el) {
+	addConnection						 :	function(id) {
 		
-		if (el.getAttribute('id')) {
-			
-			var result					 =	this.searchResults[el.getAttribute('id')];
-			
-			this.rows.push(new ExtAPI.App.connection(result,this.domTypes[result.type].children[1],true));	
-			
-		}
-		
+		var result						 =	this.searchResults[id];
+	
+		this.rows.push(new ExtAPI.App.connection(result,this.domTypes[result.type],true));	
+				
 	},
 	
 	destroy								 :	function() {
 		
-		SOAPI.Event.removeEventHandler(this.searchEl,	"keyup",	"connections");
-		SOAPI.Event.removeEventHandler(this.searchEl,	"mousedown","connections");
-		SOAPI.Event.removeEventHandler(this.searchEl,	"blur",		"connections");
+		this.searchEl.unbind();
 		
-		this.destroyRows();
+		this.destroySearchRows();
 		
-		for (var i = 0; i < this.rows.length; i++)  	this.rows[i].destroy();
+		for (var i = 0; i < this.rows.length; i++) {
+			
+			this.rows[i].destroy();
+			this.rows[i]				 =	null;
+		
+		}
 		
 		this.domTypes					 =	null;
 		this.rows						 =	null;
@@ -245,9 +219,11 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 		
 		onkeyup							 :	function(event) {
 			
-			this.searched				 =	false;
+			var ref						 =	event.data.ref;
 			
-			if (event.event.keyCode == '13') this.doSearch();
+			ref.searched				 =	false;
+			
+			if (event.keyCode == '13') 		ref.doSearch();
 			
 			return true;
 						
@@ -255,7 +231,11 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 		
 		onmousedown						 :	function(event) {
 			
-			if (this.searchEl.value == 'search...')	this.searchEl.value = '';
+			var ref						 =	event.data.ref;
+			
+			ref.searchEl.focus();
+			
+			if (ref.searchEl.val() == 'search...')	ref.searchEl.val('');
 			
 			return true;
 			
@@ -263,11 +243,13 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 		
 		onblur							 :	function(event) {
 			
-			if (this.searchEl.value == '')	this.searchEl.value = 'search...';
-			else
-											this.doSearch();
+			var ref						 =	event.data.ref;
 			
-			this.searched				 =	false;
+			if (ref.searchEl.val() == '')	ref.searchEl.val('search...');
+			else
+											ref.doSearch();
+			
+			ref.searched				 =	false;
 										
 			return true;
 			
@@ -277,13 +259,28 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 	
 	searchResults						 :	{
 	
-		onmousedown						 :	function(event) {
+		onaddmousedown					 :	function(event) {
 		
-			this.addConnection(event.element);
+			var ref						 =	event.data.ref;
+			var target					 =	$(event.target);
+			
+			ref.addConnection(target.parent().attr('id'));
 		
 			return true;
 		
-		}
+		},
+		
+		onnamemousedown					 :	function(event) {
+			
+			var ref						 =	event.data.ref;
+			var target					 =	$(event.target);
+			var result					 =	ref.searchResults[target.parent().attr('id')];
+			
+			ExtAPI.Node.getNode(result._id);
+		
+			return true;
+		
+		}		
 		
 	}
 	

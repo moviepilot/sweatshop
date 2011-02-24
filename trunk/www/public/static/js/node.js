@@ -1,9 +1,7 @@
 /**
  * -------------------------------------------------------------------------------- Getnode object
  */
-ExtAPI.App.node				 			 = 	SOAPI.Class.extension();
-
-ExtAPI.App.node.extend
+ExtAPI.App.node					 		 = 	Class.extend
 ({	
 	
 	_requests							 :	new Array(),
@@ -11,13 +9,13 @@ ExtAPI.App.node.extend
 	_loading							 :	false,
 			
 	nodename							 :	null,
-	category							 :	null,
+	nodetype							 :	null,
 	nodeprops							 :	null,
 	connections							 :	null,
 	
 	breadcrumb							 :	null,
 	
-	construct							 :	function() {
+	init								 :	function() {
 		
 		this.startTimer();
 		
@@ -27,7 +25,7 @@ ExtAPI.App.node.extend
 	
 	get									 :	function(request) {
 		
-		if (!this._requests.contains(request)) 	this._requests.push(request);
+		this._requests.push(request);
 	
 	},
 	
@@ -41,12 +39,12 @@ ExtAPI.App.node.extend
 			this._currentRequest		 =	this._requests.shift();
 			
 			var obj						 =	this;
-			SOAPI.Ajax.request({
+			
+			$.ajax({
 			
 				url 					 : 	'/node/',
 				data 					 : 	this._currentRequest.data,
-				onSuccess 				 : 	function(data) { obj.callback(data) },
-				showProgress			 :	false
+				success 				 : 	function(data) { obj.callback(data) }
 				
 			});
 					
@@ -88,26 +86,29 @@ ExtAPI.App.node.extend
 	
 	buildApp							 :	function(data) {
 		
-		if (data)							window.node = data;
+		if (data)							window.currentNode = data;
 		
 		this.breadcrumb.addId(data._id,data.name);
 		
 		this.nodename					 =	new ExtAPI.App.nodename();
-		this.category					 =	new ExtAPI.App.nodetype();
+		this.nodetype					 =	new ExtAPI.App.nodetype();
 		this.nodeprops					 =	new ExtAPI.App.nodeprops();
 		
 		// Leaving the image upload to later, the following line just sets the bg of the
 		// pic holder for the time being
 		
-		if (window.node.picture_url)		$('pic').style.backgroundImage = 'url(' + window.node.picture_url + ')';
+		if (window.currentNode.picture_url)	$('#pic').css('background-image','url(' + window.currentNode.picture_url + ')');
 	
 	},
 	
 	updateEdges							 :	function(data) {
 		
-		if (data)							window.node.edges =	data;
+		if (data) {
+			
+			window.currentNode.edges 	 =	data;
+			this.connections			 =	new ExtAPI.App.connections();	
 		
-		this.connections				 =	new ExtAPI.App.connections();	
+		}
 		
 	},
 	
@@ -120,10 +121,10 @@ ExtAPI.App.node.extend
 			
 		}
 		
-		if (this.category != null) {
+		if (this.nodetype != null) {
 			
-			this.category.destroy();
-			this.category				 =	null;
+			this.nodetype.destroy();
+			this.nodetype				 =	null;
 			
 		}
 		
