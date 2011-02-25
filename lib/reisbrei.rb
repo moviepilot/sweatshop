@@ -15,6 +15,17 @@ module Reisbrei
       redirect '/index.html'
     end
 
+    # get javascript
+    get '/static/app.js' do
+      content_type 'text/javascript', :charset => 'utf-8'
+      output = ''
+      Dir.glob('trunk/www/public/static/js/*.js') do |file|
+        output << File.read(file)
+      end
+      output
+    end
+
+    # get node
     get '/nodes/:id' do |id|
       json_response { Data.get_node(id) }
     end
