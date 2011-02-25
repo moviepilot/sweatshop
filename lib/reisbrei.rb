@@ -9,7 +9,7 @@ module Reisbrei
   class CreateError < Exception; end
   class App < Sinatra::Application
     set :static, true
-    set :public, 'trunk/www/public'
+    set :public, 'www/public'
 
     get '/' do
       redirect '/index.html'
@@ -19,7 +19,7 @@ module Reisbrei
     get '/static/app.js' do
       content_type 'text/javascript', :charset => 'utf-8'
       output = ''
-      Dir.glob('trunk/www/public/static/js/*.js') do |file|
+      Dir.glob('www/public/static/js/*.js') do |file|
         output << File.read(file)
       end
       output
