@@ -185,8 +185,23 @@ ExtAPI.App.connections					 = 	Class.extend
 		
 		var result						 =	this.searchResults[id];
 	
-		this.rows.push(new ExtAPI.App.connection(result,this.domTypes[result.type],true));	
-				
+		var newConnection				 =	new ExtAPI.App.connection(result,this.domTypes[result.type],true);
+	
+		//~ Nasty closure - but perhaps the best way of doing it?
+		
+		var obj							 =	this;
+		var listenForNewRow				 =	function(e,p) {
+			
+			if (p.error && p.exists) 		newConnection.destroy();
+			else
+											obj.rows.push(newConnection);
+											
+			//~ In here, we should do something with the response, if we had the id.										
+											
+		};
+	
+		$(newConnection).bind('connectionstate',listenForNewRow);
+		
 	},
 	
 	destroy								 :	function() {

@@ -1,27 +1,40 @@
 <?php
 
-function curlput($url,$putData) {
-	
-	$ln							 		 =	strlen($putData);
-	
-	$fhand 								 = 	fopen('php://memory', 'rw');
-	
-	fwrite($fhand,$putData);
-	rewind($fhand);
+function curlput($url,$data,$method = 'put') {
 	
 	$chand 								 = 	curl_init();
 	
-	curl_setopt($chand, CURLOPT_URL, 				$url); 
-	curl_setopt($chand, CURLOPT_RETURNTRANSFER, 	1); 
-	curl_setopt($chand, CURLOPT_PUT, 				1); 
-	curl_setopt($chand, CURLOPT_INFILE, 			$fhand);
-	curl_setopt($chand, CURLOPT_INFILESIZE, 		$ln);
+	curl_setopt($chand, CURLOPT_URL, 			$url); 
+	curl_setopt($chand, CURLOPT_RETURNTRANSFER, 1);
+	
+	if ($method == 'put') {
+	
+		$ln							 	 =	strlen($data);
+	
+		$fhand 							 = 	fopen('php://memory', 'rw');
+	
+		fwrite($fhand,$data);
+		rewind($fhand);
+	
+		curl_setopt($chand, CURLOPT_PUT,				1);
+		curl_setopt($chand, CURLOPT_INFILESIZE, 		$ln);
+		curl_setopt($chand, CURLOPT_INFILE, 			$fhand);
+		
+	} elseif ($method == 'post') {
+		
+		curl_setopt($chand, CURLOPT_POST,			1);
+		curl_setopt($chand, CURLOPT_POSTFIELDS,		$data);
+		
+		
+	}
 	
 	$curlreposonse						 = 	curl_exec($chand);
 	
-	if (!$curlreposonse)			return false;	
+	curl_close($chand);
 	
-	return true;
+	if (!$curlreposonse)					return false;	
+	
+	return 									$curlreposonse;
 	
 }
 
@@ -109,18 +122,36 @@ if (isset($_POST['key']) && !empty($_POST['key'])) {
 			
 		break;
 		
-		case 'edge':
+		case 'edgeupdate':
 			
-			if ($_POST['_id'] == 'null') {
+			$url						.= 	'edges/' . $_POST['_id'];
+			$putData					 =	json_encode(array("weight" => $_POST['weight']));
+			
+			if (curlput($url,$putData)) {
 				
 				$repsonse['type']		 =	'message';
-				$repsonse['message']	 =	"A new edge has been created to node id {$_POST['nodeid']}";
+				$repsonse['message']	 =	'Edge value has been updated';
+			
+			}
+			
+		break;
+	
+		case 'newedge':
+			
+			$url						.= 	'edges';
+			$putData					 =	json_encode(array("type" => "WorksIn", "from" => (int) $_POST['from_id'],"to" => (int) $_POST['to_id'],"weight" => (float) $_POST['weight']));
+			$postreponse 				 = 	curlput($url,$putData,'post');
+			
+			if ($postreponse == "\"edge already existing\"") {
+				
+				$repsonse['type']		 =	'error';
+				$repsonse['message']	 =	'That edge already exists';
 				
 			} else {
-			
+				
 				$repsonse['type']		 =	'message';
-				$repsonse['message']	 =	"Edge id {$_POST['_id']} weight has been updated to {$_POST['weight']}";
-			
+				$repsonse['message']	 =	'A new edge has been created';
+				
 			}
 			
 		break;

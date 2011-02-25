@@ -94,13 +94,26 @@ ExtAPI.App.connection					 = 	Class.extend
 		
 		if (this.connection.weight != value) {
 			
-			var data					 =	new Object();
-			data._id					 =	this.connection._id;
-			data.nodeid					 =	this.connection.to._id;
-			data.key				 	 = 	'edge';
-			data.weight					 =	value;
-						
 			var obj						 =	this;
+			var data					 =	new Object();
+			data.weight					 =	value;
+			
+			// Node that this will create a new node, but there
+			// is no repsonse, so we can't allow further updates at this stage.
+			
+			if (this.connection._id == null) {
+				
+				data.key			 	 = 	'newedge';
+				data.from_id			 =	window.currentNode._id;
+				data.to_id				 = this.connection.to._id;	
+			
+			} else {
+				
+				data._id				 =	this.connection._id;
+				data.key			 	 = 	'edgeupdate';
+				
+			}
+					
 			$.ajax({
 			
 				url 					 : 	'/ajax/',
@@ -119,9 +132,21 @@ ExtAPI.App.connection					 = 	Class.extend
 	
 	onResponse							 :	function(response) {
 		
-		if (response.type == 'message') 	ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
-		else
-											ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+		if (response.type == 'message') {
+			
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
+			
+			$(this).trigger('connectionstate',{ error : false });
+				
+		} else {
+			
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+			
+			$(this).trigger('connectionstate',{ error : true , exists : true });
+			
+			return;
+		
+		}
 		
 		this.mode					 	 =	'display';
 		this.setInterface();
