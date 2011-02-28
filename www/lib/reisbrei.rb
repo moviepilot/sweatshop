@@ -18,8 +18,10 @@ module Reisbrei
     # get javascript
     get '/static/app.js' do
       content_type 'text/javascript', :charset => 'utf-8'
+      files = []
+      Dir.glob('www/public/static/js/*.js') { |file| files << file }
       output = ''
-      Dir.glob('www/public/static/js/*.js') do |file|
+      files.sort.each do |file|
         output << File.read(file)
       end
       output
