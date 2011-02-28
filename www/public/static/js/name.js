@@ -58,17 +58,16 @@ ExtAPI.App.nodename					 	 = 	Class.extend
 		if (this.input.val() && (this.h1.text() != this.input.val())) {
 			
 			var data					 =	new Object();
-			data._id					 =	window.currentNode._id;
-			data.key				 	 = 	'name';
-			data.value					 =	this.input.val();
+			data.name					 =	this.input.val();
 			
 			var obj						 =	this;
 			$.ajax({
 			
-				url 					 : 	'/ajax/',
-				type					 :	'post',
-				data 					 : 	data,
-				success 				 : 	function(data) { obj.onResponse(data) }
+				url 					 : 	'/nodes/' + window.currentNode._id,
+				type					 :	'put',
+				data 					 : 	$.toJSON(data),
+				complete 				 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+				contentType				 : 	'application/json'
 				
 			});
 			
@@ -84,18 +83,17 @@ ExtAPI.App.nodename					 	 = 	Class.extend
 		
 	},
 	
-	onResponse							 :	function(response) {
+	onComplete							 :	function(jqXHR) {
 		
-		if (response.type == 'message') {
+		if (jqXHR.statusText == 'success') {
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,'Node name has been updated');
 			
 			this.mode					 =	'display';
 			
+		} else if (jqXHR.statusText == 'error') {
 			
-		} else	{
-				
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
 			
 			this.mode					 =	'edit';
 			

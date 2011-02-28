@@ -99,30 +99,38 @@ ExtAPI.App.connection					 = 	Class.extend
 			data.weight					 =	value;
 			
 			// Node that this will create a new node, but there
-			// is no repsonse, so we can't allow further updates at this stage.
+			// is no response, so we can't allow further updates at this stage.
 			
 			if (this.connection._id == null) {
 				
-				data.key			 	 = 	'newedge';
-				data.from_id			 =	window.currentNode._id;
-				data.to_id				 = this.connection.to._id;	
+				data.type			 	 = 	'WorksIn';
+				data.from				 =	window.currentNode._id;
+				data.to					 = 	this.connection.to._id;	
+				
+				$.ajax({
 			
+					url 				 : 	'/edges',
+					type				 :	'post',
+					data 				 : 	$.toJSON(data),
+					complete 			 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+					contentType			 : 	'application/json'
+				
+				});
+				
 			} else {
 				
-				data._id				 =	this.connection._id;
-				data.key			 	 = 	'edgeupdate';
+				$.ajax({
+			
+					url 				 : 	'/edges/' + this.connection._id,
+					type				 :	'put',
+					data 				 : 	$.toJSON(data),
+					complete 			 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+					contentType			 : 	'application/json'
+				
+				});
 				
 			}
 					
-			$.ajax({
-			
-				url 					 : 	'/ajax/',
-				type					 :	'post',
-				data 					 : 	data,
-				success 				 : 	function(data) { obj.onResponse(data) }
-				
-			});
-			
 			this.mode					 =	'saving';
 			this.setInterface();
 						
@@ -130,17 +138,17 @@ ExtAPI.App.connection					 = 	Class.extend
 		
 	},
 	
-	onResponse							 :	function(response) {
+	onComplete							 :	function(jqXHR) {
 		
-		if (response.type == 'message') {
+		if (jqXHR.statusText == 'success') {
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,'Edge value has been updated');
 			
 			$(this).trigger('connectionstate',{ error : false });
 				
-		} else {
+		} else if (jqXHR.statusText == 'error') {
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
 			
 			$(this).trigger('connectionstate',{ error : true , exists : true });
 			

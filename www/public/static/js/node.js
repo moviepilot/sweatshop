@@ -42,9 +42,8 @@ ExtAPI.App.node					 		 = 	Class.extend
 			
 			$.ajax({
 			
-				url 					 : 	'/node/',
-				data 					 : 	this._currentRequest.data,
-				success 				 : 	function(data) { obj.callback(data) }
+				url 					 : 	this._currentRequest.data.url,
+				success 				 : 	function(data) { obj.callback(data); obj = null; }
 				
 			});
 					
@@ -79,8 +78,8 @@ ExtAPI.App.node					 		 = 	Class.extend
 		
 		var obj							 =	this;
 		
-		this.get({ data : { '_id' : _id }, callback : function(data){ obj.buildApp(data); }});
-		this.get({ data : { '_id' : _id , edges	: true}, callback	: function(data){ obj.updateEdges(data); }});
+		this.get({ data : { 'url' : '/nodes/' + _id }, 					callback : function(data){ obj.buildApp(data); }});
+		this.get({ data : { 'url' : '/nodes/' + _id + '/edges/out' }, 	callback : function(data){ obj.updateEdges(data); }});
 		
 	},
 	

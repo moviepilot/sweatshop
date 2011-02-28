@@ -61,17 +61,16 @@ ExtAPI.App.connections					 = 	Class.extend
 			this.mode					 =	'searching';
 			
 			var data					 =	new Object();
-			data.search					 = 	this.searchEl.val();				
+			data.q						 = 	this.searchEl.val();				
 			
 			this.searchEl.blur();
 			
 			var obj						 =	this;
 			$.ajax({
 			
-				url 					 : 	'/node/',
-				type					 :	'post',
+				url 					 : 	'/search',
 				data 					 : 	data,
-				success 				 : 	function(data) { obj.onResponse(data) }
+				success 				 : 	function(data) { obj.onResponse(data);  obj = null; }
 				
 			});
 				

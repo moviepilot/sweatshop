@@ -35,18 +35,18 @@ ExtAPI.App.nodetype					 	 = 	Class.extend
 	
 	saveSelect							 :	function() {
 		
-		var data						 =	new Object();
-		data._id						 =	window.currentNode._id;
-		data.key				 		 = 	'type';
-		data.value						 =	this.el.val();
 		
+		var data						 =	new Object();
+		data.type						 =	this.el.val();
+				
 		var obj							 =	this;
 		$.ajax({
 		
-			url 						 : 	'/ajax/',
-			type						 :	'post',
-			data 						 : 	data,
-			success 					 : 	function(data) { obj.onResponse(data) }
+			url 						 : 	'/nodes/' + window.currentNode._id,
+			type						 :	'put',
+			data 						 : 	$.toJSON(data),
+			complete 					 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+			contentType					 : 	'application/json'
 			
 		});
 			
@@ -55,17 +55,17 @@ ExtAPI.App.nodetype					 	 = 	Class.extend
 		
 	},
 	
-	onResponse							 :	function(response) {
+	onComplete							 :	function(jqXHR) {
 		
-		if (response.type == 'message') {
+		if (jqXHR.statusText == 'success') {
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,'Node type has been updated');
 			
 			this.value					 =	this.el.val();
 			
-		} else {
+		} else if (jqXHR.statusText == 'error') {
 		
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
 			
 			this.selectOption();
 			

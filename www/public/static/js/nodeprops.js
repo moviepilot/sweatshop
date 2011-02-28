@@ -169,19 +169,30 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		var target						 =	$(event.target);
 		
 		var data						 =	new Object();
-		data._id						 =	window.currentNode._id;
-		data.key				 		 = 	'nodepropremove';
-		data.value						 =	row.children('.key').text();
+		var key							 =	row.children('.key').text();
+			
+		this.rows.splice(this.rows.indexOf(row),1);
 		
 		row.remove();
 		
-		var obj						 =	this;
+		if (key == 'facebook_id') {
+				
+			data['facebook_ids']		 = 	this.getFacebookIds();
+			
+		} else {
+			
+			data[key] 					 = 	'';
+		
+		}
+		
+		var obj							 =	this;
 		$.ajax({
 		
-			url 					 : 	'/ajax/',
-			type					 :	'post',
-			data 					 : 	data,
-			success 				 : 	function(data) { obj.onResponse(data) }
+			url 						 : 	'/nodes/' + window.currentNode._id,
+			type						 :	'put',
+			data 						 : 	$.toJSON(data),
+			complete 					 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+			contentType					 : 	'application/json'
 			
 		});
 		
@@ -194,27 +205,26 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			this.mode					 =	'saving';
 			
 			var data					 =	new Object();
-			data._id					 =	window.currentNode._id;
-			data.key				 	 = 	this.keyVal;
+			var key				 	  	 = 	this.keyVal;
 			
-			if (data.key == 'facebook_id') {
+			if (key == 'facebook_id') {
 				
-				data.value 				 = 	this.getFacebookIds();
-				data.key				 =	'facebook_ids';
+				data['facebook_ids']	 = 	this.getFacebookIds();
 				
 			} else {
 				
-				data.value 				 = 	this.input.val();
+				data[key] 				 = 	this.input.val();
 			
 			}
 			
 			var obj						 =	this;
 			$.ajax({
 			
-				url 					 : 	'/ajax/',
-				type					 :	'post',
-				data 					 : 	data,
-				success 				 : 	function(data) { obj.onResponse(data) }
+				url 					 : 	'/nodes/' + window.currentNode._id,
+				type					 :	'put',
+				data 					 : 	$.toJSON(data),
+				complete 				 : 	function(jqXHR) { obj.onComplete(jqXHR); obj = null; },
+				contentType				 : 	'application/json'
 				
 			});
 			
@@ -228,18 +238,18 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		
 	},
 	
-	onResponse							 :	function(response) {
+	onComplete							 :	function(jqXHR) {
 		
-		if (response.type == 'message') {
+		if (jqXHR.statusText == 'success') {
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,'Node property updated');
 			
 			this.mode					 =	'display';
 			this.initVal				 = 	this.input == null ? 0 : this.input.val();
 			
-		} else	{
+		} else if (jqXHR.statusText == 'error') {
 				
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,response.message);
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
 			
 			this.mode					 =	'edit';
 			
@@ -259,15 +269,21 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			
 			if (key == 'facebook_id') {
 				
-				if (this.rows[i][0] == this.curreEl.parent()[0])	facebookIds.push(this.input.val());
-				else
-																	facebookIds.push(this.rows[i].children('.value').text());
+				if (this.curreEl && this.rows[i][0] == this.curreEl.parent()[0]) {
+					
+					facebookIds.push(this.input.val());
+				
+				} else {
+
+					facebookIds.push(this.rows[i].children('.value').text());
+
+				}
 				
 			}
 			
 		}
 		
-		return facebookIds.toString();
+		return facebookIds;
 		
 	},
 	
@@ -288,6 +304,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 				this.input.val(this.initVal);
 				this.input.removeAttr('disabled');
 				this.input.removeClass('saving');
+				
+				this.input.focus();
 				
 			break;
 			
