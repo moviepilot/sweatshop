@@ -42,7 +42,13 @@ ExtAPI.App.nodename					 	 = 	Class.extend
 			this.input					 =	$('<input type="text"/>').attr('id','nameInput');
 			
 			this.el.append(this.input);
-			this.input.focus();
+			
+			//~ This is horrible, but will alow the input to be added to the DOM, and activated in Chrome
+			
+			var obj						 =	this;
+			var timeout					 =	null;
+			
+			timeout						 =	setTimeout(function(){ obj.input.focus(); clearTimeout(timeout); },0);
 			
 			this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
 			this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);

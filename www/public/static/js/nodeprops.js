@@ -15,6 +15,9 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 	initVal								 :	null,
 	keyVal								 :	null,
 	
+	helper								 :	null,
+	facebookIDs							 :	null,
+	
 	mode								 :	'display',
 	
 	proptypes							 :	null,
@@ -29,9 +32,13 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			this.addNew					 =	$('#addNewTypes');
 			
 			this.rows					 =	new Array();
-			this.proptypes				 =	['facebook_id','moviemaster_id','permalink'];
-			this.initVal				 =	0;
-			this.keyVal					 =	'';
+			this.proptypes				 = 	{
+				
+				facebook_id				 :	false,
+				moviemaster_id			 :	false,
+				permalink				 :	false
+				
+			}
 			
 			//~ Just for demo purposes - should really be some sort of key value type thing so that it's felexible
 			
@@ -47,6 +54,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 					
 				}
 				
+				this.resolveFacebookIds();
+				
 			}
 			
 			if (currNode.moviemaster_id)	this.addRow('moviemaster_id', currNode.moviemaster_id, false);
@@ -60,18 +69,22 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 	
 	addTypes							 :	function() {
 		
-		//~ This is only to give an idea of how it will work, until we've decided ultimatelly how props will work
+		this.addNew.children().unbind();
+		this.addNew.children().remove();
 		
-		var ln							 =	this.proptypes.length;
 		var handlers					 =	ExtAPI.App.nodeprops.eventHandlers;
 		
-		while (ln--) {
+		for (var ptype in this.proptypes) {
 			
-			var value					 = 	$('<div />').text(this.proptypes[ln]);
-			
-			value.bind('mousedown',{ ref : this }, handlers.addNew.onmousedown);
-			
-			this.addNew.append(value);
+			if (!this.proptypes[ptype] || ptype == 'facebook_id') {
+				
+				var value					 = 	$('<div />').text(ptype);
+				
+				value.bind('mousedown',{ ref : this }, handlers.addNew.onmousedown);
+				
+				this.addNew.append(value);
+				
+			}			
 			
 		}
 		
@@ -81,17 +94,9 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 	
 		//~ Remove types that we've already go on load
 		
+		this.proptypes[key]				 = true;
+		
 		var handlers				 	 =	ExtAPI.App.nodeprops.eventHandlers;
-		var ln							 =	this.proptypes.length;
-		
-		while (ln--) {
-			
-			if (this.proptypes[ln] == key && key != 'facebook_id') 	this.proptypes.splice(ln,1);
-			
-		}
-		
-		//~ Row
-		
 		var row							 =	$('<div />').addClass('row');
 		
 		row.disableSelection();
@@ -110,6 +115,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		valcol.text(value);
 		row.append(valcol);
 		
+		if (key == 'facebook_id') 			valcol.attr('title','Click to view link');
+		
 		//~ Don't add listeners, or del if the row needs to be proteced
 		
 		if (!protect) {
@@ -119,8 +126,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			delcol.text('[x]');
 			row.append(delcol);
 			
-			valcol.bind('mousedown',{ ref : this , keyRef : key }, handlers.value.onmousedown);
-			delcol.bind('mousedown',{ ref : this , row : row }, handlers.del.onmousedown);
+			valcol.bind('mousedown', { ref : this , keyRef : key }, handlers.value.onmousedown);
+			delcol.bind('mousedown', { ref : this , row : row }, 	handlers.del.onmousedown);
 			
 		}
 		
@@ -138,26 +145,47 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		
 		if (this.mode == 'display') {
 			
-			this.mode					 =	'edit';
+			var keyVal					 =	event.data.keyRef;
+			var initVal					 =	$(event.target).text();
 			
-			this.curreEl				 = 	$(event.target);
-			this.keyVal					 =	event.data.keyRef;
-			this.initVal 				 = 	this.curreEl.text();
+			if (keyVal == 'facebook_id') {
+				
+				if (this.facebookIDs[initVal] != undefined && this.facebookIDs[initVal].link) {
+					
+					window.open(this.facebookIDs[initVal].link,'_new');
+					
+				} else {
+					
+					ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,'No link associated with that ID');
+					
+				}
+				
+			} else {
 			
-			var handlers				 =	ExtAPI.App.nodeprops.eventHandlers;
+				this.curreEl			 = 	$(event.target);
+				this.keyVal				 =	keyVal;
+				this.initVal 			 = 	initVal;
+				this.mode				 =	'edit';
+				
+				var handlers			 =	ExtAPI.App.nodeprops.eventHandlers;
+				
+				this.curreEl.empty();
+				
+				this.input				 =	$('<input type="text"/>').attr('id','keyInput');
+				
+				this.curreEl.append(this.input);
+				
+				var obj						 =	this;
+				var timeout					 =	null;
 			
-			this.curreEl.empty();
-			
-			this.input					 =	$('<input type="text"/>').attr('id','keyInput');
-			
-			this.curreEl.append(this.input);
-			
-			this.input.focus();
-						
-			this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
-			this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);
-			
-			this.setInterface();
+				timeout						 =	setTimeout(function(){ obj.input.focus(); clearTimeout(timeout); },1);
+										
+				this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
+				this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);
+				
+				this.setInterface();
+				
+			}
 			
 		}
 		
@@ -196,11 +224,27 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			
 		});
 		
+		this.proptypes[key]				 =	false;
+		
+		this.addTypes();
+		
 	},
 	
-	saveInput							 :	function() {
+	saveInput							 :	function(rem) {
 		
-		if (this.input.val() && (this.input.val() != this.initVal)) {
+		var save					 	 =	false;
+		
+		
+		if (this.input != null && this.input.val() && (this.input.val() != this.initVal)) save = true;
+			 
+		if (rem) {
+			
+			this.keyVal					 =	rem;
+			save 						 = 	true;
+		
+		}
+			
+		if (save) {
 			
 			this.mode					 =	'saving';
 			
@@ -247,6 +291,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			this.mode					 =	'display';
 			this.initVal				 = 	this.input == null ? 0 : this.input.val();
 			
+			if (jqXHR.responseText)			window.currentNode = eval('(' + jqXHR.responseText + ')');			
+			
 		} else if (jqXHR.statusText == 'error') {
 				
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
@@ -256,6 +302,7 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		}
 		
 		this.setInterface();
+		this.resolveFacebookIds();
 		
 	},
 	
@@ -294,8 +341,12 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			
 			case 'saving':
 				
-				this.input.attr('disabled', 'disabled');
-				this.input.addClass('saving');
+				if (this.input != null) {
+					
+					this.input.attr('disabled', 'disabled');
+					this.input.addClass('saving');
+				
+				}
 				
 			break;
 			
@@ -326,6 +377,42 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		
 	},
 	
+	resolveFacebookIds					 :	function(data,status) {
+		
+		if (status == undefined) {
+			
+			var fbids					 =	window.currentNode.facebook_ids;
+			
+			data						 =	new Object();
+			data.ids					 =	fbids.toString();
+			
+			var obj							 =	this;
+			$.ajax({
+			
+				url 						 : 	'https://graph.facebook.com/',
+				data 						 : 	data,
+				type						 :	'get',
+				dataType					 :	'jsonp',
+				success 					 : 	function(data,status) { obj.resolveFacebookIds(data,status); }
+				
+			});
+			
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Resolving Facebook IDs');
+			
+		} else if (status == 'success') {
+			
+			if (data.length != 0) 			this.facebookIDs = data;
+			
+			ExtAPI.Feedback.clearMessage();
+			
+		} else {
+			
+			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,'Failed to resolve Facebook IDs');
+			
+		}
+		
+	},
+	
 	destroy								 :	function() {
 		
 		this.addNew.children().unbind();
@@ -346,8 +433,10 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		this.holder						 =	null;
 		this.input						 =	null;
 		this.curreEl					 =	null;
-		this.initVal					 =	null;
-		this.keyVal						 =	null;
+		this.initVal					 =	0;
+		this.keyVal						 =	'';
+		this.helper						 =	null;
+		this.facebookIDs				 =	null;
 		
 	}
 	
@@ -414,9 +503,18 @@ ExtAPI.App.nodeprops.eventHandlers 		 = 	{
 			var target					 =	$(event.target);
 			var ref 					 =	event.data.ref;
 			
-			ref.addRow(target.text(),'enter value...',false);
+			if (target.text() == 'facebook_id')  {
 			
-			if (target.text() != 'facebook_id')	target.remove();
+				//~ We would need to add anything in here that requires a helper
+			
+				this.helper				 = 	new ExtAPI.App.facebookhelper(ref);
+			
+			} else {
+				
+				ref.addRow(target.text(),'enter value...',false);
+				ref.addTypes();
+									
+			}
 			
 			return true;		
 			

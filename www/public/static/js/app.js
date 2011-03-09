@@ -1,7 +1,7 @@
 /**
  * -------------------------------------------------------------------------------- Main init object
  */
-window.currentNode							 =	new Object();
+window.currentNode						 =	new Object();
 window.ExtAPI							 =	new Object();
 
 ExtAPI.App								 = 	Class.extend
@@ -19,3 +19,4 @@ ExtAPI.App								 = 	Class.extend
 });
 
 $(document).ready(function() { new ExtAPI.App(); });
+

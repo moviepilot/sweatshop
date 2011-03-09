@@ -145,7 +145,13 @@ ExtAPI.App.connection					 = 	Class.extend
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._MESSAGE,'Edge value has been updated');
 			
 			$(this).trigger('connectionstate',{ error : false });
+			
+			if (this.connection._id == null) {
 				
+				this.connection			 =	$.parseJSON(jqXHR.responseText);
+				
+			}
+		
 		} else if (jqXHR.statusText == 'error') {
 			
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
@@ -183,12 +189,21 @@ ExtAPI.App.connection					 = 	Class.extend
 	
 	destroy								 :	function() {
 		
-		this.name.unbind();
-		this.weight.unbind();
+		if (this.name) {
+			
+			this.name.unbind();
+			this.name.remove();
+			
+		}
 		
-		this.name.remove();
-		this.weight.remove();
-		this.row.remove();
+		if (this.weight) {
+			
+			this.weight.unbind();
+			this.weight.remove();
+		
+		}
+		
+		if (this.row) 						this.row.remove();
 		
 		this.connection					 =	null;
 		this.parentEl					 =	null;
