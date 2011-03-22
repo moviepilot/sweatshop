@@ -10,6 +10,15 @@ module Reisbrei
       get_node(id).reject {|k,v| !%w(type _id name).include? k.to_s}
     end
 
+    def create_node(data)
+      check_valid_node!(data)
+      node = Nodes[(id = Nodes.keys.max+1)] = {}
+      data.each do |k,v|
+        node[k.to_sym] = v
+      end
+      get_node(id)
+    end
+
     def update_node(id, data)
       id = id.to_i
       return nil unless node = Nodes[id]
@@ -77,6 +86,12 @@ module Reisbrei
       edge[:from] = simple_node(edge[:from])
       edge[:to] = simple_node(edge[:to])
       edge
+    end
+
+    def check_valid_node!(data)
+      raise CreateError, 'missing type' unless data['type']
+      raise CreateError, 'missing name' unless data['name']
+      true
     end
 
     def check_valid_edge!(data)

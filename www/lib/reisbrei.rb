@@ -27,6 +27,14 @@ module Reisbrei
       output
     end
 
+    # create node
+    post %r|/nodes/?| do
+      json_response {
+        new_node = Data.create_node(JSON.parse(request.body.read))
+        redirect "/nodes/#{new_node[:_id]}", 303
+      }
+    end
+
     # get node
     get '/nodes/:id' do |id|
       json_response { Data.get_node(id) }
@@ -45,7 +53,7 @@ module Reisbrei
       json_response { Data.edges_of_node(id, options) }
     end
 
-    post '/edges' do
+    post %r|/edges/?| do
       json_response {
         new_edge = Data.create_edge(JSON.parse(request.body.read))
         redirect "/edges/#{new_edge[:_id]}", 303
