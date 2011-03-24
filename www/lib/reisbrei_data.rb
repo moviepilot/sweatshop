@@ -1,6 +1,8 @@
 module Reisbrei
   module Data
+    class CreateError < Exception; end
     extend self
+
     def get_node(id)
       id = id.to_i
       Nodes[id].merge({:_id => id})
@@ -112,10 +114,16 @@ module Reisbrei
       end.empty?
     end
 
+    def load_static_data!
+      data_dir = File.dirname(__FILE__)+'/../data/'
+      const_set(:Nodes, YAML.load(File.read(data_dir+'nodes.yml')))
+      const_set(:Edges, YAML.load(File.read(data_dir+'edges.yml')))
+    end
+
     Nodes = {
       12233 => {
         :type => "Person",
-        :name => "Johnny Depp",
+        :name => "xJohnny Depp",
         :facebook_ids => [ '98765', '87654' ],
         :moviemaster_id => 16345,
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0486/8280/Johnny_Depp_person.jpg',
@@ -123,7 +131,7 @@ module Reisbrei
       },
       1 => {
         :type => 'Movie',
-        :name => 'Fear and Loathing in Las Vegas',
+        :name => 'xFear and Loathing in Las Vegas',
         :facebook_ids => ['51234', '12344', '21340'],
         :moviemaster_id => 547,
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0002/3676/23676_person.jpg',
@@ -131,25 +139,25 @@ module Reisbrei
       },
       2 => {
         :type => 'Movie',
-        :name => 'Pirates of the Caribbean',
+        :name => 'xPirates of the Caribbean',
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0001/3043/13043.jpg',
         :permalink => 'fluch-der-karibik'
       },
       3 => {
         :type => 'Movie',
-        :name => 'Sleepy Hollow',
+        :name => 'xSleepy Hollow',
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0467/6252/Sleepy_Hollow.jpg',
         :permalink => 'sleepy-hollow'
       },
       4 => {
         :type => 'Movie',
-        :name => 'Public Enemies',
+        :name => 'xPublic Enemies',
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0179/8959/49d877e28ecdc.jpg',
         :permalink => 'public-enemies-2'
       },
       5 => {
         :type => 'Movie',
-        :name => 'The Libertine',
+        :name => 'xThe Libertine',
         :picture_url => 'http://static2.moviepilot.de/de/files/images/0004/2298/poster.jpg',
         :permalink => 'the-libertine'
       }
