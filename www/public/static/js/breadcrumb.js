@@ -116,7 +116,7 @@ ExtAPI.App.breadcrumb.eventHandlers  	 = 	{
 			
 			ref.resetElements(index);
 			
-			ExtAPI.Node.getNode(elementsval._id);
+			ExtAPI.Getnode.update(elementsval._id);
 			
 			return true;
 			

@@ -34,7 +34,8 @@ input {
 
 h1 {
 	font-size: 28px;
-	line-height: 32px;
+	line-height: 36px;
+	font-weight: bold;
 }
 
 h2 {
@@ -80,10 +81,14 @@ div#wrapper div#feedback.info {
  */
 
 div#wrapper {
-	width: 900px;
+	width: 945px;
+	margin: 20px auto;
+	position: relative;
+}
+
+div#wrapper div.inner {
 	background: #fff;
 	border: 1px solid #000;
-	margin: 20px auto;
 	padding: 22px 22px 3px 22px;
 	min-height: 600px;
 	-moz-border-radius: 10px;
@@ -140,20 +145,42 @@ div#wrapper div.column div#pic {
 }
 
 div#wrapper div#name {
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #CCCCCC;
 	cursor: pointer;
-	padding-bottom: 22px;
-	min-height: 32px;
+	min-height: 37px;
+	margin-bottom: 20px;
+	padding: 8px 15px;	
 }
 
 div#wrapper div#name input {
+	font: 28px/36px "Arial";
 	font-weight: bold;
-	font-size: 19px;
-	width: 576px;
-	line-height: 28px;
+	width: 100%;
+	padding: 2px 0;
+	border: none;
 }
 
 div#wrapper div#name input.saving {
 	background: url('/static/images/ajax-loader.gif') 98% 8px no-repeat;
+}
+
+div#wrapper div#newNodeButton {
+	cursor: pointer;
+    padding: 0 9px;
+    position: absolute;
+	right: -66px;
+    top: 74px;
+    white-space: nowrap;
+	background: #ccc;
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(90deg);
+	-o-transform: rotate(90deg);
+	border-top-left-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topright: 5px;
 }
 
 /**
@@ -315,8 +342,14 @@ div#wrapper div.column div.connection div > div.weight {
 }
 
 div#wrapper div.column div.connection div > div.weight a.ui-slider-handle {
-	margin-top: -3px;
 	cursor: pointer;
+    font-size: 9px;
+    height: 19px;
+    margin-top: -5px;
+    padding-top: 0;
+    text-align: center;
+    text-decoration: none;
+    width: 19px;
 }
 
 /**
@@ -420,5 +453,34 @@ div.fbsearchresults div.fbsearchrow div.checkboxHolder {
 }
 
 div.fbsearchresults div.fbsearchrow div.checkboxHolder input {
+	width: auto;
+}
+
+/**
+ * ------------------------------------------------------------------------------------ Create node
+ */
+
+div.createNodeForm {
+	margin-top: 10px;
+}
+
+div.createNodeForm > div {
+	margin: 17px 0;
+}
+
+div.createNodeForm > div > input[type=text] {
+	margin-left: 15px;
+}
+
+div.createNodeForm > div > select {
+	margin-left: 20px;
+}
+
+div.createNodeForm > div > select > option {
+	padding-right: 15px;
+}
+
+div.createNodeForm > div > input[type=checkbox] {
+	margin-left: 89px;
 	width: auto;
 }

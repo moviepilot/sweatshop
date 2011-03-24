@@ -72,7 +72,7 @@ ExtAPI.App.connection					 = 	Class.extend
 			max							 : 	100,
 			step						 :	10,
 			value					 	 :	(this.connection.weight * 100)
-		
+			
 			});
 		
 		this.row.append(this.weight);
@@ -85,6 +85,7 @@ ExtAPI.App.connection					 = 	Class.extend
 		
 		this.name.bind('mousedown',		{ ref : this }, handlers.name.mousedown);
 		this.weight.bind('slidestop',	{ ref : this }, handlers.slider.slidestop);
+		this.weight.bind('slide',		{ ref : this }, handlers.slider.slide);
 		
 	},
 	
@@ -224,7 +225,7 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 			
 			var ref						 =	event.data.ref;
 			
-			ExtAPI.Node.getNode(ref.connection.to._id);
+			ExtAPI.Getnode.update(ref.connection.to._id);
 						
 			return true;
 			
@@ -248,10 +249,21 @@ ExtAPI.App.connection.eventHandlers 	 = 	{
 			
 			ref.updateTimer			 = 	setTimeout(function(){ ref.saveInput(Number(ui.value / 100).toPrecision(1)); },2000);
 			
+			ref.weight.children()[1].innerHTML = '';
 			
 			return true;
 			
-		}	
+		},
+		
+		slide							 :	function(event,ui) {
+			
+			var ref						 =	event.data.ref;
+			
+			ref.weight.children()[1].innerHTML = (ui.value / 100);
+						
+			return true;
+			
+		}
 		
 	}
 	

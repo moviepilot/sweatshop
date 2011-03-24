@@ -180,12 +180,10 @@ ExtAPI.App.connections					 = 	Class.extend
 		
 	},
 	
-	addConnection						 :	function(id) {
+	addConnection						 :	function(node) {
 		
-		var result						 =	this.searchResults[id];
-	
-		var newConnection				 =	new ExtAPI.App.connection(result,this.domTypes[result.type],true);
-	
+		var newConnection				 =	new ExtAPI.App.connection(node,this.domTypes[node.type],true);
+		
 		//~ Nasty closure - but perhaps the best way of doing it?
 		
 		var obj							 =	this;
@@ -194,11 +192,9 @@ ExtAPI.App.connections					 = 	Class.extend
 			if (p.error && p.exists) 		newConnection.destroy();
 			else
 											obj.rows.push(newConnection);
-											
-			//~ In here, we should do something with the response, if we had the id.										
-											
+							
 		};
-	
+		
 		$(newConnection).bind('connectionstate',listenForNewRow);
 		
 	},
@@ -278,7 +274,7 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 			var ref						 =	event.data.ref;
 			var target					 =	$(event.target);
 			
-			ref.addConnection(target.parent().attr('id'));
+			ref.addConnection(ref.searchResults[target.parent().attr('id')]);
 		
 			return true;
 		
@@ -290,7 +286,7 @@ ExtAPI.App.connections.eventHandlers  	 = 	{
 			var target					 =	$(event.target);
 			var result					 =	ref.searchResults[target.parent().attr('id')];
 			
-			ExtAPI.Node.getNode(result._id);
+			ExtAPI.Getnode.update(result._id);
 		
 			return true;
 		

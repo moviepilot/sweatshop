@@ -19,11 +19,29 @@ ExtAPI.App.nodetype					 	 = 	Class.extend
 			this.el						 =	$('#type');
 			
 			this.value					 = 	window.currentNode.type;
+			
+			this.addOptions();
 			this.selectOption();
 			
 			this.el.bind('change', { 'ref' : this }, handlers.el.onchange);
 						
 		}	
+		
+	},
+	
+	addOptions							 :	function() {
+		
+		var nodeTypes					 =	ExtAPI.App.config.getNodeTypes();
+		
+		var ln							 =	nodeTypes.length;
+		
+		while (ln--) {
+			
+			var option					 =	$('<option />').val(nodeTypes[ln]).text(nodeTypes[ln]);
+			
+			this.el.append(option);
+		
+		}
 		
 	},
 	
@@ -34,8 +52,7 @@ ExtAPI.App.nodetype					 	 = 	Class.extend
 	},
 	
 	saveSelect							 :	function() {
-		
-		
+				
 		var data						 =	new Object();
 		data.type						 =	this.el.val();
 				
@@ -101,6 +118,7 @@ ExtAPI.App.nodetype					 	 = 	Class.extend
 	destroy								 :	function() {
 		
 		this.el.unbind();
+		this.el.children().remove();
 		
 		this.el							 =	null;	
 		

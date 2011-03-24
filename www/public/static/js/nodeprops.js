@@ -36,8 +36,8 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 				
 				facebook_id				 :	false,
 				moviemaster_id			 :	false,
-				permalink				 :	false
-				
+				permalink				 :	false,
+				picture_url				 :	false
 			}
 			
 			//~ Just for demo purposes - should really be some sort of key value type thing so that it's felexible
@@ -60,6 +60,7 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			
 			if (currNode.moviemaster_id)	this.addRow('moviemaster_id', currNode.moviemaster_id, false);
 			if (currNode.permalink)			this.addRow('permalink', currNode.permalink, false);
+			if (currNode.picture_url)		this.addRow('picture_url', currNode.picture_url, false);
 			
 			this.addTypes();
 							
@@ -150,7 +151,7 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 			
 			if (keyVal == 'facebook_id') {
 				
-				if (this.facebookIDs[initVal] != undefined && this.facebookIDs[initVal].link) {
+				if (this.facebookIDs != null && this.facebookIDs[initVal] != undefined && this.facebookIDs[initVal].link) {
 					
 					window.open(this.facebookIDs[initVal].link,'_new');
 					
@@ -175,10 +176,10 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 				
 				this.curreEl.append(this.input);
 				
-				var obj						 =	this;
-				var timeout					 =	null;
+				var obj					 =	this;
+				var timeout				 =	null;
 			
-				timeout						 =	setTimeout(function(){ obj.input.focus(); clearTimeout(timeout); },1);
+				timeout					 =	setTimeout(function(){ obj.input.focus(); clearTimeout(timeout); },1);
 										
 				this.input.bind('blur',		{ 'ref' : this }, handlers.input.onblur);
 				this.input.bind('keyup',	{ 'ref' : this }, handlers.input.onkeyup);
@@ -227,6 +228,10 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		this.proptypes[key]				 =	false;
 		
 		this.addTypes();
+		
+		//~ If the picture URL has been updated, then update that
+		
+		if (key == 'picture_url')			$('#pic').css('background-image','');
 		
 	},
 	
@@ -303,6 +308,10 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		
 		this.setInterface();
 		this.resolveFacebookIds();
+		
+		//~ If the picture URL has been updated, then update that
+		
+		if (this.keyVal == 'picture_url')	ExtAPI.Getnode.updatePictureURL();
 		
 	},
 	
@@ -381,23 +390,27 @@ ExtAPI.App.nodeprops				 	 = 	Class.extend
 		
 		if (status == undefined) {
 			
-			var fbids					 =	window.currentNode.facebook_ids;
+			if (window.currentNode.facebook_ids) {
 			
-			data						 =	new Object();
-			data.ids					 =	fbids.toString();
-			
-			var obj							 =	this;
-			$.ajax({
-			
-				url 						 : 	'https://graph.facebook.com/',
-				data 						 : 	data,
-				type						 :	'get',
-				dataType					 :	'jsonp',
-				success 					 : 	function(data,status) { obj.resolveFacebookIds(data,status); }
+				var fbids				 =	window.currentNode.facebook_ids;
 				
-			});
+				data					 =	new Object();
+				data.ids				 =	fbids.toString();
+				
+				var obj					 =	this;
+				$.ajax({
+				
+					url 				 : 	'https://graph.facebook.com/',
+					data 				 : 	data,
+					type				 :	'get',
+					dataType			 :	'jsonp',
+					success 			 : 	function(data,status) { obj.resolveFacebookIds(data,status); }
+					
+				});
+				
+				ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Resolving Facebook IDs');
 			
-			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._INFO,'Resolving Facebook IDs');
+			}
 			
 		} else if (status == 'success') {
 			

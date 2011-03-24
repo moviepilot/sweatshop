@@ -10,9 +10,10 @@ ExtAPI.App								 = 	Class.extend
 	init								 :	function() {
 		
 		ExtAPI.Feedback				 	 = 	new ExtAPI.App.feedback();
-		ExtAPI.Node					 	 =	new ExtAPI.App.node();
+		ExtAPI.Getnode				 	 =	new ExtAPI.App.getnode();
+		ExtAPI.Createnode				 =	new ExtAPI.App.createnode();
 		
-		ExtAPI.Node.getNode(window.intiNodeId);	
+		ExtAPI.Getnode.update(window.intiNodeId);	
 		
 	}
 

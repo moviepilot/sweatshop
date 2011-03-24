@@ -1,7 +1,7 @@
 /**
  * -------------------------------------------------------------------------------- Getnode object
  */
-ExtAPI.App.node					 		 = 	Class.extend
+ExtAPI.App.getnode				 		 = 	Class.extend
 ({	
 	
 	_requests							 :	new Array(),
@@ -17,19 +17,31 @@ ExtAPI.App.node					 		 = 	Class.extend
 	
 	init								 :	function() {
 		
-		this.startTimer();
-		
 		this.breadcrumb					 =	new ExtAPI.App.breadcrumb();
+		
+	},
+	
+	update								 :	function(_id) {
+		
+		this.detroyUI();
+		
+		//~ Get node, and edges
+		
+		var obj							 =	this;
+		
+		this.get({ data : { 'url' : '/nodes/' + _id }, 					callback : function(data){ obj.buildNodeUI(data); }});
+		this.get({ data : { 'url' : '/nodes/' + _id + '/edges/out' }, 	callback : function(data){ obj.buildEdgeUI(data); }});
 		
 	},
 	
 	get									 :	function(request) {
 		
 		this._requests.push(request);
+		this.processRequests();
 	
 	},
 	
-	processRequest						 :	function() {
+	processRequests						 :	function() {
 		
 		if (!this._loading && this._requests.length > 0) {
 			
@@ -68,39 +80,38 @@ ExtAPI.App.node					 		 = 	Class.extend
 		this._currentRequest			 =	null;
 		this._loading					 =	false;
 		
-	},
-	
-	getNode								 :	function(_id) {
-		
-		this.detroyUI();
-		
-		//~ Get node, and edges
-		
-		var obj							 =	this;
-		
-		this.get({ data : { 'url' : '/nodes/' + _id }, 					callback : function(data){ obj.buildApp(data); }});
-		this.get({ data : { 'url' : '/nodes/' + _id + '/edges/out' }, 	callback : function(data){ obj.updateEdges(data); }});
+		if (this._requests.length > 0) 		this.processRequests();
 		
 	},
 	
-	buildApp							 :	function(data) {
+	buildNodeUI							 :	function(data) {
 		
-		if (data)							window.currentNode = data;
+		if (data) {
+			
+			window.currentNode 			 = 	data;
 		
-		this.breadcrumb.addId(data._id,data.name);
+			this.breadcrumb.addId(data._id,data.name);
+			
+			this.nodename				 =	new ExtAPI.App.nodename();
+			this.nodetype				 =	new ExtAPI.App.nodetype();
+			this.nodeprops				 =	new ExtAPI.App.nodeprops();
+			
+			this.updatePictureURL();
 		
-		this.nodename					 =	new ExtAPI.App.nodename();
-		this.nodetype					 =	new ExtAPI.App.nodetype();
-		this.nodeprops					 =	new ExtAPI.App.nodeprops();
+		}
+	
+	},
+	
+	updatePictureURL					 :	function() {
 		
 		// Leaving the image upload to later, the following line just sets the bg of the
 		// pic holder for the time being
+			
+		$('#pic').css('background-image','url(' + window.currentNode.picture_url + ')');
 		
-		if (window.currentNode.picture_url)	$('#pic').css('background-image','url(' + window.currentNode.picture_url + ')');
-	
 	},
 	
-	updateEdges							 :	function(data) {
+	buildEdgeUI							 :	function(data) {
 		
 		if (data) {
 			
@@ -140,15 +151,6 @@ ExtAPI.App.node					 		 = 	Class.extend
 			this.connections			 =	null;
 			
 		}		
-		
-	},
-	
-	startTimer							 :	function() {
-		
-		//~ Run the processRequest for the first time, so that we don't have to wait
-		
-		var obj							 =	this;	
-		var timer						 =	setInterval(function(){ obj.processRequest(); },100);
 		
 	}
 	
