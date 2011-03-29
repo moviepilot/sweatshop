@@ -5,4 +5,6 @@ require 'bundler'
 Bundler.require
 
 require 'reisbrei'
+Reisbrei::Data.load_static_data!
+
 run Reisbrei::App
