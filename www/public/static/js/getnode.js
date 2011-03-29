@@ -23,7 +23,7 @@ ExtAPI.App.getnode				 		 = 	Class.extend
 	
 	update								 :	function(_id) {
 		
-		this.detroyUI();
+		this.destroyUI();
 		
 		//~ Get node, and edges
 		
@@ -116,13 +116,22 @@ ExtAPI.App.getnode				 		 = 	Class.extend
 		if (data) {
 			
 			window.currentNode.edges 	 =	data;
-			this.connections			 =	new ExtAPI.App.connections();	
-		
+			
+			if (this.connections == null) {
+			
+				this.connections		 =	new ExtAPI.App.connections();	
+			
+			} else {
+				
+				this.connections.processEdges();
+				
+			}
+			
 		}
 		
 	},
 	
-	detroyUI							 :	function() {
+	destroyUI							 :	function() {
 		
 		if (this.nodename != null) {
 			
@@ -147,8 +156,7 @@ ExtAPI.App.getnode				 		 = 	Class.extend
 		
 		if (this.connections != null) {
 			
-			this.connections.destroy();
-			this.connections			 =	null;
+			this.connections.reset();
 			
 		}		
 		

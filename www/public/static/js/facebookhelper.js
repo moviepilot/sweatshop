@@ -96,7 +96,7 @@ ExtAPI.App.facebookhelper		 	 	 = 	Class.extend
 		
 		data.q 							 =	this.searchEl.val();
 		data.type						 =	'page';
-		data.fields						 =	'id,link,name,category,picture';
+		data.fields						 =	'id,link,name,category,picture,likes';
 		data.limit						 =	25;
 		data.offset						 =	this.searchOffset;
 		
@@ -178,13 +178,20 @@ ExtAPI.App.facebookhelper		 	 	 = 	Class.extend
 		category.text(data.category);
 		row.append(category);
 		
+		//~ Likes
+		
+		var likes						 =	$('<div />').addClass('likes');							
+		
+		likes.text('Likes: ' + data.likes);
+		row.append(likes);
+		
 		//~ Link
 		
 		var link						 =	$('<a />').addClass('link');							
 		link.attr('href',data.link);
 		link.text(data.link);
 		row.append(link);
-		
+				
 		//~ Checkbox
 		
 		var checkboxHolder				 =	$('<div />').addClass('checkboxHolder');							

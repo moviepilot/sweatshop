@@ -13,7 +13,9 @@ ExtAPI.App								 = 	Class.extend
 		ExtAPI.Getnode				 	 =	new ExtAPI.App.getnode();
 		ExtAPI.Createnode				 =	new ExtAPI.App.createnode();
 		
-		ExtAPI.Getnode.update(window.intiNodeId);	
+		//~ If there is no current node, show the input
+		
+		ExtAPI.Createnode.buildModal();
 		
 	}
 

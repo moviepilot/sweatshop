@@ -70,7 +70,7 @@ module Reisbrei
     end
 
     get '/search' do
-      json_response { Data.search(params['q']) }
+      json_response { Data.search(params['term']) }
     end
 
     def json_response(&block)

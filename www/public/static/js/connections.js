@@ -61,7 +61,7 @@ ExtAPI.App.connections					 = 	Class.extend
 			this.mode					 =	'searching';
 			
 			var data					 =	new Object();
-			data.q						 = 	this.searchEl.val();				
+			data.term					 = 	this.searchEl.val();				
 			
 			this.searchEl.blur();
 			
@@ -199,25 +199,20 @@ ExtAPI.App.connections					 = 	Class.extend
 		
 	},
 	
-	destroy								 :	function() {
+	reset								 :	function() {
 		
-		this.searchEl.unbind();
+		if (this.rows != null) {
 		
-		this.destroySearchRows();
-		
-		for (var i = 0; i < this.rows.length; i++) {
+			for (var i = 0; i < this.rows.length; i++) {
+				
+				this.rows[i].destroy();
+				this.rows[i]				 =	null;
 			
-			this.rows[i].destroy();
-			this.rows[i]				 =	null;
-		
-		}
-		
-		this.domTypes					 =	null;
-		this.rows						 =	null;
-		this.holder						 =	null;
-		this.searchEl					 =	null;
-		this.searched					 =	false;
-		this.searchResults				 =	null;		
+			}
+			
+			this.rows						 =	new Array();
+			
+		}		
 		
 	}
 	

@@ -8,7 +8,7 @@
 }
 
 body {
-	font: 12px/21px "Arial";
+	font: 11px/18px "Arial";
 	color: #000;
 }
 
@@ -170,8 +170,8 @@ div#wrapper div#newNodeButton {
 	cursor: pointer;
     padding: 0 9px;
     position: absolute;
-	right: -66px;
-    top: 74px;
+	right: -67px;
+    top: 61px;
     white-space: nowrap;
 	background: #ccc;
 	-webkit-transform:rotate(90deg);
@@ -433,6 +433,10 @@ div.fbsearchresults div.fbsearchrow div.category {
     font-size: 10px;
 }
 
+div.fbsearchresults div.fbsearchrow div.likes {
+	font-size: 10px;
+}
+
 div.fbsearchresults div.fbsearchrow a.link {
 	color: blue;
     display: block;
@@ -481,6 +485,6 @@ div.createNodeForm > div > select > option {
 }
 
 div.createNodeForm > div > input[type=checkbox] {
-	margin-left: 89px;
+	margin-left: 99px;
 	width: auto;
 }
