@@ -54,8 +54,6 @@ ExtAPI.App.createnode					 = 	Class.extend
 									
 					if (obj.saveNode()) {
 					
-						//obj.resetModal();
-					
 						obj 			 =	null;
 						
 						$(this).dialog('close');
@@ -195,8 +193,6 @@ ExtAPI.App.createnode					 = 	Class.extend
 			ExtAPI.Feedback.showMessage(ExtAPI.Feedback._ERROR,jqXHR.responseText);
 			
 		}
-		
-		
 		
 	}
 	

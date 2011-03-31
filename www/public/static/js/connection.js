@@ -65,6 +65,8 @@ ExtAPI.App.connection					 = 	Class.extend
 		
 		this.weight						 =	$('<div />').addClass('weight');
 		
+		if (this.connection.weight == undefined) this.connection.weight = 0;
+		
 		this.weight.slider({
 			
 			range						 : 	'max',
