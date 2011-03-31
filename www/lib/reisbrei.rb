@@ -76,11 +76,18 @@ module Reisbrei
     def json_response(&block)
       content_type :json
       data = block.call
-      data ? data.to_json : [404, nil.to_json]
+      return [404, nil.to_json] unless data
+      data = data.to_json
+      data = wrap_jsonp(data, params[:callback]) if params[:callback]
+      data
     rescue JSON::ParserError
       return [400, "Invalid JSON".to_json]
     rescue Reisbrei::CreateError => e
       return [400, e.message.to_json]
+    end
+
+    def wrap_jsonp(json, callback)
+      "%s(%s);" % [callback, json]
     end
   end
 end
