@@ -52,28 +52,56 @@ h2 {
  * ------------------------------------------------------------------------------------ Feedback
  */
 
-div#wrapper div#feedback {
+div#feedbackHolder {
+	position: absolute;
+    right: 23px;
+    top: 20px;
+}
+
+div#feedbackHolder > div {
+	float: left;
+	margin-left: 5px;
+}
+
+div#feedback {
 	font-size: 10px;
     padding: 1px 9px;
-    position: absolute;
-    right: 22px;
-    top: 20px;
 	color: #FFFFFF;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
 
-div#wrapper div#feedback.error {
+div#feedback.error {
 	background: #E3711A;
 }
 
-div#wrapper div#feedback.message {
+div#feedback.message {
 	background: #3FBC2A;
 }
 
-div#wrapper div#feedback.info {
+div#feedback.info {
 	background: #EEF88A;
 	color: #000;
+}
+
+/**
+ * ------------------------------------------------------------------------------------ Load indicator
+ */
+
+div#loadindicator {
+	background: url('/static/images/ajax-loader.gif') right center no-repeat;
+	height: 20px;
+	width: 16px;
+	color: #BAB1B1;
+}
+
+div#xhroverlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99999;
 }
 
 /**
