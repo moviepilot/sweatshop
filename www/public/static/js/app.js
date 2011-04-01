@@ -13,10 +13,9 @@ ExtAPI.App								 = 	Class.extend
 		ExtAPI.Getnode				 	 =	new ExtAPI.App.getnode();
 		ExtAPI.Createnode				 =	new ExtAPI.App.createnode();
 		
-		//~ If there is no current node, show the input
+		var XHRhelper					 =	new ExtAPI.App.xhrhelper();
 		
 		ExtAPI.Createnode.buildModal();
-		
 	}
 
 });
