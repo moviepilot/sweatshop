@@ -1,0 +1,15 @@
+--- 
+chdir: /home/rails/sweatshop
+environment: production
+address: 127.0.0.1 
+port: 10100
+timeout: 30
+log: log/thin.log
+pid: tmp/pids/thin.pid
+max_conns: 1024
+max_persistent_conns: 512
+require: []
+
+wait: 30
+servers: 4
+daemonize: true
